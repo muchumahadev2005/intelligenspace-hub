@@ -320,7 +320,7 @@ export const activity: ActivityItem[] = [
   { id: "act_3", title: "Appointment scheduled", detail: "Priya Sharma · Follow-up · 14:00", kind: "appointment", at: ago(14) },
   { id: "act_4", title: "Sales Assistant went live", detail: "Deployed to +91 22 6188 0930", kind: "agent", at: ago(26) },
   { id: "act_5", title: "Webhook delivered", detail: "call.completed → api.acmelabs.io · 200 in 142ms", kind: "webhook", at: ago(33) },
-  { id: "act_6", title: "Call recording processed", detail: "Call #10281 · transcript and summary ready", kind: "recording", at: ago: 0 as never },
+  { id: "act_6", title: "Call recording processed", detail: "Call #10281 · transcript and summary ready", kind: "recording", at: ago(41) },
 ];
 
 export const metrics: DashboardMetrics = {
