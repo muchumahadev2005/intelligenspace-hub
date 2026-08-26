@@ -188,9 +188,9 @@ const intents = ["Appointment booking", "Pricing enquiry", "Order status", "Supp
 const outcomes = ["Appointment scheduled", "Info provided", "Order placed", "Escalated to human", "Rescheduled", "Demo booked", "Unresolved", "Callback logged"];
 
 export const calls: Call[] = Array.from({ length: 24 }, (_, i) => {
-  const [customer, number] = names[i % names.length];
-  const agent = agents[i % 4];
-  const status = statuses[i % statuses.length];
+  const [customer, number] = names[i % names.length] as [string, string];
+  const agent = agents[i % 4] as Agent;
+  const status = statuses[i % statuses.length] as Call["status"];
   const duration = status === "missed" ? 0 : 60 + ((i * 37) % 420);
   return {
     id: `call_${10284 - i}`,
