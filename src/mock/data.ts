@@ -205,9 +205,9 @@ export const calls: Call[] = Array.from({ length: 24 }, (_, i) => {
     startedAt: ago(i * 47 + 3),
     cost: Math.round(duration * 0.04 * 100) / 100,
     hasRecording: status === "completed",
-    intent: intents[i % intents.length],
+    intent: intents[i % intents.length]!,
     sentiment: i % 5 === 0 ? "neutral" : i % 7 === 0 ? "negative" : "positive",
-    outcome: outcomes[i % outcomes.length],
+    outcome: outcomes[i % outcomes.length]!,
     summary:
       "Caller reached the agent regarding scheduling. The agent confirmed availability, booked the slot and sent a confirmation message.",
     transcript: transcriptA,
