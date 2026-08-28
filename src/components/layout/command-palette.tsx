@@ -26,11 +26,11 @@ export function CommandPalette({
 
   const go = (to: string) => {
     onOpenChange(false);
-    void navigate({ to });
+    void navigate({ to: to as "/" });
   };
 
   return (
-    <CommandDialog open={open} onOpenChange={onOpenChange} title="Command palette">
+    <CommandDialog open={open} onOpenChange={onOpenChange}>
       <CommandInput placeholder="Search pages, agents, calls or run an action…" />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>

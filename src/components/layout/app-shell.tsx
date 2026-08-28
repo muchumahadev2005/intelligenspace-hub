@@ -90,9 +90,9 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             {group.items.map((item) => (
               <li key={item.to}>
                 <Link
-                  to={item.to}
+                  to={item.to as "/"}
                   onClick={onNavigate}
-                  activeOptions={{ exact: item.exact }}
+                  activeOptions={{ exact: item.exact ?? false }}
                   className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground data-[status=active]:bg-primary/12 data-[status=active]:text-primary data-[status=active]:font-medium"
                 >
                   <item.icon className="size-4" aria-hidden />
@@ -146,7 +146,7 @@ function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
 
       <div className="ml-auto flex items-center gap-2">
         <Button asChild size="sm" className="hidden sm:inline-flex">
-          <Link to="/agents/new">
+          <Link to={"/agents/new" as "/"}>
             <Plus /> New agent
           </Link>
         </Button>
@@ -175,17 +175,17 @@ function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to="/settings">Settings</Link>
+              <Link to={"/settings" as "/"}>Settings</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/team">Team</Link>
+              <Link to={"/team" as "/"}>Team</Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to="/usage">Usage & credits</Link>
+              <Link to={"/usage" as "/"}>Usage & credits</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link to="/login">Sign out</Link>
+              <Link to={"/login" as "/"}>Sign out</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -203,7 +203,7 @@ function BottomNav() {
         return (
           <Link
             key={item.to}
-            to={item.to}
+            to={item.to as "/"}
             className={cn(
               "flex flex-col items-center gap-1 py-2.5 text-[11px]",
               active ? "text-primary" : "text-muted-foreground",
@@ -242,7 +242,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <p className="text-xs font-medium">Credits</p>
           <p className="mt-1 text-xs text-muted-foreground">18,420 remaining</p>
           <Button asChild size="sm" variant="outline" className="mt-3 w-full">
-            <Link to="/usage">Top up</Link>
+            <Link to={"/usage" as "/"}>Top up</Link>
           </Button>
         </div>
       </aside>
