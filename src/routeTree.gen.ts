@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TemplatesRouteImport } from './routes/templates'
 import { Route as AgentsIndexRouteImport } from './routes/agents.index'
 import { Route as AgentsIdRouteImport } from './routes/agents.$id'
 import { Route as AgentsNewRouteImport } from './routes/agents.new'
@@ -17,6 +18,11 @@ import { Route as AgentsNewRouteImport } from './routes/agents.new'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TemplatesRoute = TemplatesRouteImport.update({
+  id: '/templates',
+  path: '/templates',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgentsIndexRoute = AgentsIndexRouteImport.update({
@@ -37,12 +43,14 @@ const AgentsNewRoute = AgentsNewRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/templates': typeof TemplatesRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
   '/agents/': typeof AgentsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/templates': typeof TemplatesRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
   '/agents': typeof AgentsIndexRoute
@@ -50,20 +58,23 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/templates': typeof TemplatesRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
   '/agents/': typeof AgentsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/agents/$id' | '/agents/new' | '/agents/'
+  fullPaths: '/' | '/templates' | '/agents/$id' | '/agents/new' | '/agents/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/agents/$id' | '/agents/new' | '/agents'
-  id: '__root__' | '/' | '/agents/$id' | '/agents/new' | '/agents/'
+  to: '/' | '/templates' | '/agents/$id' | '/agents/new' | '/agents'
+  id:
+    '__root__' | '/' | '/templates' | '/agents/$id' | '/agents/new' | '/agents/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  TemplatesRoute: typeof TemplatesRoute
   AgentsIdRoute: typeof AgentsIdRoute
   AgentsNewRoute: typeof AgentsNewRoute
   AgentsIndexRoute: typeof AgentsIndexRoute
@@ -76,6 +87,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/templates': {
+      id: '/templates'
+      path: '/templates'
+      fullPath: '/templates'
+      preLoaderRoute: typeof TemplatesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agents/': {
@@ -104,6 +122,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  TemplatesRoute: TemplatesRoute,
   AgentsIdRoute: AgentsIdRoute,
   AgentsNewRoute: AgentsNewRoute,
   AgentsIndexRoute: AgentsIndexRoute,
