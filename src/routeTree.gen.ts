@@ -10,33 +10,91 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TemplatesRouteImport } from './routes/templates'
+import { Route as AgentsIndexRouteImport } from './routes/agents.index'
+import { Route as AgentsIdRouteImport } from './routes/agents.$id'
+import { Route as AgentsNewRouteImport } from './routes/agents.new'
+import { Route as CallsIndexRouteImport } from './routes/calls.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TemplatesRoute = TemplatesRouteImport.update({
+  id: '/templates',
+  path: '/templates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentsIndexRoute = AgentsIndexRouteImport.update({
+  id: '/agents/',
+  path: '/agents/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentsIdRoute = AgentsIdRouteImport.update({
+  id: '/agents/$id',
+  path: '/agents/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentsNewRoute = AgentsNewRouteImport.update({
+  id: '/agents/new',
+  path: '/agents/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CallsIndexRoute = CallsIndexRouteImport.update({
+  id: '/calls/',
+  path: '/calls/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/templates': typeof TemplatesRoute
+  '/agents/$id': typeof AgentsIdRoute
+  '/agents/new': typeof AgentsNewRoute
+  '/agents/': typeof AgentsIndexRoute
+  '/calls/': typeof CallsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/templates': typeof TemplatesRoute
+  '/agents/$id': typeof AgentsIdRoute
+  '/agents/new': typeof AgentsNewRoute
+  '/agents': typeof AgentsIndexRoute
+  '/calls': typeof CallsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/templates': typeof TemplatesRoute
+  '/agents/$id': typeof AgentsIdRoute
+  '/agents/new': typeof AgentsNewRoute
+  '/agents/': typeof AgentsIndexRoute
+  '/calls/': typeof CallsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    '/' | '/templates' | '/agents/$id' | '/agents/new' | '/agents/' | '/calls/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/templates' | '/agents/$id' | '/agents/new' | '/agents' | '/calls'
+  id:
+    | '__root__'
+    | '/'
+    | '/templates'
+    | '/agents/$id'
+    | '/agents/new'
+    | '/agents/'
+    | '/calls/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  TemplatesRoute: typeof TemplatesRoute
+  AgentsIdRoute: typeof AgentsIdRoute
+  AgentsNewRoute: typeof AgentsNewRoute
+  AgentsIndexRoute: typeof AgentsIndexRoute
+  CallsIndexRoute: typeof CallsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +106,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/templates': {
+      id: '/templates'
+      path: '/templates'
+      fullPath: '/templates'
+      preLoaderRoute: typeof TemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents/': {
+      id: '/agents/'
+      path: '/agents'
+      fullPath: '/agents/'
+      preLoaderRoute: typeof AgentsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents/$id': {
+      id: '/agents/$id'
+      path: '/agents/$id'
+      fullPath: '/agents/$id'
+      preLoaderRoute: typeof AgentsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents/new': {
+      id: '/agents/new'
+      path: '/agents/new'
+      fullPath: '/agents/new'
+      preLoaderRoute: typeof AgentsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calls/': {
+      id: '/calls/'
+      path: '/calls'
+      fullPath: '/calls/'
+      preLoaderRoute: typeof CallsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  TemplatesRoute: TemplatesRoute,
+  AgentsIdRoute: AgentsIdRoute,
+  AgentsNewRoute: AgentsNewRoute,
+  AgentsIndexRoute: AgentsIndexRoute,
+  CallsIndexRoute: CallsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
