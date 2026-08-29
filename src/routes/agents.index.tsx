@@ -11,7 +11,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAgents } from "@/hooks/use-platform";
 import { num, relative } from "@/lib/format";
 
-export const Route = createFileRoute("/agents")({
+export const Route = createFileRoute("/agents/")({
   head: () => ({
     meta: [
       { title: "Agents — AI Platform" },
