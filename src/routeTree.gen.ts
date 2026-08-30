@@ -10,20 +10,53 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppointmentsRouteImport } from './routes/appointments'
+import { Route as CatalogRouteImport } from './routes/catalog'
+import { Route as PhoneNumbersRouteImport } from './routes/phone-numbers'
+import { Route as RecordingsRouteImport } from './routes/recordings'
 import { Route as TemplatesRouteImport } from './routes/templates'
+import { Route as WebhooksRouteImport } from './routes/webhooks'
 import { Route as AgentsIndexRouteImport } from './routes/agents.index'
 import { Route as AgentsIdRouteImport } from './routes/agents.$id'
 import { Route as AgentsNewRouteImport } from './routes/agents.new'
 import { Route as CallsIndexRouteImport } from './routes/calls.index'
+import { Route as CallsIdRouteImport } from './routes/calls.$id'
+import { Route as OrdersIndexRouteImport } from './routes/orders.index'
+import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppointmentsRoute = AppointmentsRouteImport.update({
+  id: '/appointments',
+  path: '/appointments',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CatalogRoute = CatalogRouteImport.update({
+  id: '/catalog',
+  path: '/catalog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PhoneNumbersRoute = PhoneNumbersRouteImport.update({
+  id: '/phone-numbers',
+  path: '/phone-numbers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RecordingsRoute = RecordingsRouteImport.update({
+  id: '/recordings',
+  path: '/recordings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TemplatesRoute = TemplatesRouteImport.update({
   id: '/templates',
   path: '/templates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WebhooksRoute = WebhooksRouteImport.update({
+  id: '/webhooks',
+  path: '/webhooks',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgentsIndexRoute = AgentsIndexRouteImport.update({
@@ -46,55 +79,137 @@ const CallsIndexRoute = CallsIndexRouteImport.update({
   path: '/calls/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CallsIdRoute = CallsIdRouteImport.update({
+  id: '/calls/$id',
+  path: '/calls/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersIndexRoute = OrdersIndexRouteImport.update({
+  id: '/orders/',
+  path: '/orders/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersIdRoute = OrdersIdRouteImport.update({
+  id: '/orders/$id',
+  path: '/orders/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/appointments': typeof AppointmentsRoute
+  '/catalog': typeof CatalogRoute
+  '/phone-numbers': typeof PhoneNumbersRoute
+  '/recordings': typeof RecordingsRoute
   '/templates': typeof TemplatesRoute
+  '/webhooks': typeof WebhooksRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
+  '/calls/$id': typeof CallsIdRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/agents/': typeof AgentsIndexRoute
   '/calls/': typeof CallsIndexRoute
+  '/orders/': typeof OrdersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/appointments': typeof AppointmentsRoute
+  '/catalog': typeof CatalogRoute
+  '/phone-numbers': typeof PhoneNumbersRoute
+  '/recordings': typeof RecordingsRoute
   '/templates': typeof TemplatesRoute
+  '/webhooks': typeof WebhooksRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
+  '/calls/$id': typeof CallsIdRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/agents': typeof AgentsIndexRoute
   '/calls': typeof CallsIndexRoute
+  '/orders': typeof OrdersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/appointments': typeof AppointmentsRoute
+  '/catalog': typeof CatalogRoute
+  '/phone-numbers': typeof PhoneNumbersRoute
+  '/recordings': typeof RecordingsRoute
   '/templates': typeof TemplatesRoute
+  '/webhooks': typeof WebhooksRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
+  '/calls/$id': typeof CallsIdRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/agents/': typeof AgentsIndexRoute
   '/calls/': typeof CallsIndexRoute
+  '/orders/': typeof OrdersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/templates' | '/agents/$id' | '/agents/new' | '/agents/' | '/calls/'
+    | '/'
+    | '/appointments'
+    | '/catalog'
+    | '/phone-numbers'
+    | '/recordings'
+    | '/templates'
+    | '/webhooks'
+    | '/agents/$id'
+    | '/agents/new'
+    | '/calls/$id'
+    | '/orders/$id'
+    | '/agents/'
+    | '/calls/'
+    | '/orders/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/templates' | '/agents/$id' | '/agents/new' | '/agents' | '/calls'
+  to:
+    | '/'
+    | '/appointments'
+    | '/catalog'
+    | '/phone-numbers'
+    | '/recordings'
+    | '/templates'
+    | '/webhooks'
+    | '/agents/$id'
+    | '/agents/new'
+    | '/calls/$id'
+    | '/orders/$id'
+    | '/agents'
+    | '/calls'
+    | '/orders'
   id:
     | '__root__'
     | '/'
+    | '/appointments'
+    | '/catalog'
+    | '/phone-numbers'
+    | '/recordings'
     | '/templates'
+    | '/webhooks'
     | '/agents/$id'
     | '/agents/new'
+    | '/calls/$id'
+    | '/orders/$id'
     | '/agents/'
     | '/calls/'
+    | '/orders/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppointmentsRoute: typeof AppointmentsRoute
+  CatalogRoute: typeof CatalogRoute
+  PhoneNumbersRoute: typeof PhoneNumbersRoute
+  RecordingsRoute: typeof RecordingsRoute
   TemplatesRoute: typeof TemplatesRoute
+  WebhooksRoute: typeof WebhooksRoute
   AgentsIdRoute: typeof AgentsIdRoute
   AgentsNewRoute: typeof AgentsNewRoute
+  CallsIdRoute: typeof CallsIdRoute
+  OrdersIdRoute: typeof OrdersIdRoute
   AgentsIndexRoute: typeof AgentsIndexRoute
   CallsIndexRoute: typeof CallsIndexRoute
+  OrdersIndexRoute: typeof OrdersIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -106,11 +221,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/appointments': {
+      id: '/appointments'
+      path: '/appointments'
+      fullPath: '/appointments'
+      preLoaderRoute: typeof AppointmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/catalog': {
+      id: '/catalog'
+      path: '/catalog'
+      fullPath: '/catalog'
+      preLoaderRoute: typeof CatalogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/phone-numbers': {
+      id: '/phone-numbers'
+      path: '/phone-numbers'
+      fullPath: '/phone-numbers'
+      preLoaderRoute: typeof PhoneNumbersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recordings': {
+      id: '/recordings'
+      path: '/recordings'
+      fullPath: '/recordings'
+      preLoaderRoute: typeof RecordingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/templates': {
       id: '/templates'
       path: '/templates'
       fullPath: '/templates'
       preLoaderRoute: typeof TemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/webhooks': {
+      id: '/webhooks'
+      path: '/webhooks'
+      fullPath: '/webhooks'
+      preLoaderRoute: typeof WebhooksRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agents/': {
@@ -141,16 +291,45 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CallsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calls/$id': {
+      id: '/calls/$id'
+      path: '/calls/$id'
+      fullPath: '/calls/$id'
+      preLoaderRoute: typeof CallsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders/': {
+      id: '/orders/'
+      path: '/orders'
+      fullPath: '/orders/'
+      preLoaderRoute: typeof OrdersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders/$id': {
+      id: '/orders/$id'
+      path: '/orders/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof OrdersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppointmentsRoute: AppointmentsRoute,
+  CatalogRoute: CatalogRoute,
+  PhoneNumbersRoute: PhoneNumbersRoute,
+  RecordingsRoute: RecordingsRoute,
   TemplatesRoute: TemplatesRoute,
+  WebhooksRoute: WebhooksRoute,
   AgentsIdRoute: AgentsIdRoute,
   AgentsNewRoute: AgentsNewRoute,
+  CallsIdRoute: CallsIdRoute,
+  OrdersIdRoute: OrdersIdRoute,
   AgentsIndexRoute: AgentsIndexRoute,
   CallsIndexRoute: CallsIndexRoute,
+  OrdersIndexRoute: OrdersIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
