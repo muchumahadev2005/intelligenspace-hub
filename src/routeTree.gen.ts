@@ -11,10 +11,16 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CatalogRouteImport } from './routes/catalog'
+import { Route as DeveloperRouteImport } from './routes/developer'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PhoneNumbersRouteImport } from './routes/phone-numbers'
 import { Route as RecordingsRouteImport } from './routes/recordings'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as TeamRouteImport } from './routes/team'
 import { Route as TemplatesRouteImport } from './routes/templates'
+import { Route as UsageRouteImport } from './routes/usage'
 import { Route as WebhooksRouteImport } from './routes/webhooks'
 import { Route as AgentsIndexRouteImport } from './routes/agents.index'
 import { Route as AgentsIdRouteImport } from './routes/agents.$id'
@@ -34,9 +40,24 @@ const AppointmentsRoute = AppointmentsRouteImport.update({
   path: '/appointments',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CatalogRoute = CatalogRouteImport.update({
   id: '/catalog',
   path: '/catalog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeveloperRoute = DeveloperRouteImport.update({
+  id: '/developer',
+  path: '/developer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PhoneNumbersRoute = PhoneNumbersRouteImport.update({
@@ -49,9 +70,24 @@ const RecordingsRoute = RecordingsRouteImport.update({
   path: '/recordings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamRoute = TeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TemplatesRoute = TemplatesRouteImport.update({
   id: '/templates',
   path: '/templates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsageRoute = UsageRouteImport.update({
+  id: '/usage',
+  path: '/usage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WebhooksRoute = WebhooksRouteImport.update({
@@ -98,10 +134,16 @@ const OrdersIdRoute = OrdersIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
+  '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
+  '/developer': typeof DeveloperRoute
+  '/onboarding': typeof OnboardingRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
+  '/settings': typeof SettingsRoute
+  '/team': typeof TeamRoute
   '/templates': typeof TemplatesRoute
+  '/usage': typeof UsageRoute
   '/webhooks': typeof WebhooksRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
@@ -114,10 +156,16 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
+  '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
+  '/developer': typeof DeveloperRoute
+  '/onboarding': typeof OnboardingRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
+  '/settings': typeof SettingsRoute
+  '/team': typeof TeamRoute
   '/templates': typeof TemplatesRoute
+  '/usage': typeof UsageRoute
   '/webhooks': typeof WebhooksRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
@@ -131,10 +179,16 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
+  '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
+  '/developer': typeof DeveloperRoute
+  '/onboarding': typeof OnboardingRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
+  '/settings': typeof SettingsRoute
+  '/team': typeof TeamRoute
   '/templates': typeof TemplatesRoute
+  '/usage': typeof UsageRoute
   '/webhooks': typeof WebhooksRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
@@ -149,10 +203,16 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/appointments'
+    | '/auth'
     | '/catalog'
+    | '/developer'
+    | '/onboarding'
     | '/phone-numbers'
     | '/recordings'
+    | '/settings'
+    | '/team'
     | '/templates'
+    | '/usage'
     | '/webhooks'
     | '/agents/$id'
     | '/agents/new'
@@ -165,10 +225,16 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/appointments'
+    | '/auth'
     | '/catalog'
+    | '/developer'
+    | '/onboarding'
     | '/phone-numbers'
     | '/recordings'
+    | '/settings'
+    | '/team'
     | '/templates'
+    | '/usage'
     | '/webhooks'
     | '/agents/$id'
     | '/agents/new'
@@ -181,10 +247,16 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/appointments'
+    | '/auth'
     | '/catalog'
+    | '/developer'
+    | '/onboarding'
     | '/phone-numbers'
     | '/recordings'
+    | '/settings'
+    | '/team'
     | '/templates'
+    | '/usage'
     | '/webhooks'
     | '/agents/$id'
     | '/agents/new'
@@ -198,10 +270,16 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppointmentsRoute: typeof AppointmentsRoute
+  AuthRoute: typeof AuthRoute
   CatalogRoute: typeof CatalogRoute
+  DeveloperRoute: typeof DeveloperRoute
+  OnboardingRoute: typeof OnboardingRoute
   PhoneNumbersRoute: typeof PhoneNumbersRoute
   RecordingsRoute: typeof RecordingsRoute
+  SettingsRoute: typeof SettingsRoute
+  TeamRoute: typeof TeamRoute
   TemplatesRoute: typeof TemplatesRoute
+  UsageRoute: typeof UsageRoute
   WebhooksRoute: typeof WebhooksRoute
   AgentsIdRoute: typeof AgentsIdRoute
   AgentsNewRoute: typeof AgentsNewRoute
@@ -228,11 +306,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppointmentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/catalog': {
       id: '/catalog'
       path: '/catalog'
       fullPath: '/catalog'
       preLoaderRoute: typeof CatalogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/developer': {
+      id: '/developer'
+      path: '/developer'
+      fullPath: '/developer'
+      preLoaderRoute: typeof DeveloperRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/phone-numbers': {
@@ -249,11 +348,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecordingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/team': {
+      id: '/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof TeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/templates': {
       id: '/templates'
       path: '/templates'
       fullPath: '/templates'
       preLoaderRoute: typeof TemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/usage': {
+      id: '/usage'
+      path: '/usage'
+      fullPath: '/usage'
+      preLoaderRoute: typeof UsageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/webhooks': {
@@ -318,10 +438,16 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppointmentsRoute: AppointmentsRoute,
+  AuthRoute: AuthRoute,
   CatalogRoute: CatalogRoute,
+  DeveloperRoute: DeveloperRoute,
+  OnboardingRoute: OnboardingRoute,
   PhoneNumbersRoute: PhoneNumbersRoute,
   RecordingsRoute: RecordingsRoute,
+  SettingsRoute: SettingsRoute,
+  TeamRoute: TeamRoute,
   TemplatesRoute: TemplatesRoute,
+  UsageRoute: UsageRoute,
   WebhooksRoute: WebhooksRoute,
   AgentsIdRoute: AgentsIdRoute,
   AgentsNewRoute: AgentsNewRoute,
