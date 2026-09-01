@@ -11,10 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as DeveloperRouteImport } from './routes/developer'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PhoneNumbersRouteImport } from './routes/phone-numbers'
 import { Route as RecordingsRouteImport } from './routes/recordings'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as TemplatesRouteImport } from './routes/templates'
 import { Route as UsageRouteImport } from './routes/usage'
@@ -37,6 +40,11 @@ const AppointmentsRoute = AppointmentsRouteImport.update({
   path: '/appointments',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CatalogRoute = CatalogRouteImport.update({
   id: '/catalog',
   path: '/catalog',
@@ -47,6 +55,11 @@ const DeveloperRoute = DeveloperRouteImport.update({
   path: '/developer',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PhoneNumbersRoute = PhoneNumbersRouteImport.update({
   id: '/phone-numbers',
   path: '/phone-numbers',
@@ -55,6 +68,11 @@ const PhoneNumbersRoute = PhoneNumbersRouteImport.update({
 const RecordingsRoute = RecordingsRouteImport.update({
   id: '/recordings',
   path: '/recordings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeamRoute = TeamRouteImport.update({
@@ -116,10 +134,13 @@ const OrdersIdRoute = OrdersIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
+  '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
   '/developer': typeof DeveloperRoute
+  '/onboarding': typeof OnboardingRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
+  '/settings': typeof SettingsRoute
   '/team': typeof TeamRoute
   '/templates': typeof TemplatesRoute
   '/usage': typeof UsageRoute
@@ -135,10 +156,13 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
+  '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
   '/developer': typeof DeveloperRoute
+  '/onboarding': typeof OnboardingRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
+  '/settings': typeof SettingsRoute
   '/team': typeof TeamRoute
   '/templates': typeof TemplatesRoute
   '/usage': typeof UsageRoute
@@ -155,10 +179,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
+  '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
   '/developer': typeof DeveloperRoute
+  '/onboarding': typeof OnboardingRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
+  '/settings': typeof SettingsRoute
   '/team': typeof TeamRoute
   '/templates': typeof TemplatesRoute
   '/usage': typeof UsageRoute
@@ -176,10 +203,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/appointments'
+    | '/auth'
     | '/catalog'
     | '/developer'
+    | '/onboarding'
     | '/phone-numbers'
     | '/recordings'
+    | '/settings'
     | '/team'
     | '/templates'
     | '/usage'
@@ -195,10 +225,13 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/appointments'
+    | '/auth'
     | '/catalog'
     | '/developer'
+    | '/onboarding'
     | '/phone-numbers'
     | '/recordings'
+    | '/settings'
     | '/team'
     | '/templates'
     | '/usage'
@@ -214,10 +247,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/appointments'
+    | '/auth'
     | '/catalog'
     | '/developer'
+    | '/onboarding'
     | '/phone-numbers'
     | '/recordings'
+    | '/settings'
     | '/team'
     | '/templates'
     | '/usage'
@@ -234,10 +270,13 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppointmentsRoute: typeof AppointmentsRoute
+  AuthRoute: typeof AuthRoute
   CatalogRoute: typeof CatalogRoute
   DeveloperRoute: typeof DeveloperRoute
+  OnboardingRoute: typeof OnboardingRoute
   PhoneNumbersRoute: typeof PhoneNumbersRoute
   RecordingsRoute: typeof RecordingsRoute
+  SettingsRoute: typeof SettingsRoute
   TeamRoute: typeof TeamRoute
   TemplatesRoute: typeof TemplatesRoute
   UsageRoute: typeof UsageRoute
@@ -267,6 +306,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppointmentsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/catalog': {
       id: '/catalog'
       path: '/catalog'
@@ -281,6 +327,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DeveloperRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/phone-numbers': {
       id: '/phone-numbers'
       path: '/phone-numbers'
@@ -293,6 +346,13 @@ declare module '@tanstack/react-router' {
       path: '/recordings'
       fullPath: '/recordings'
       preLoaderRoute: typeof RecordingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/team': {
@@ -378,10 +438,13 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppointmentsRoute: AppointmentsRoute,
+  AuthRoute: AuthRoute,
   CatalogRoute: CatalogRoute,
   DeveloperRoute: DeveloperRoute,
+  OnboardingRoute: OnboardingRoute,
   PhoneNumbersRoute: PhoneNumbersRoute,
   RecordingsRoute: RecordingsRoute,
+  SettingsRoute: SettingsRoute,
   TeamRoute: TeamRoute,
   TemplatesRoute: TemplatesRoute,
   UsageRoute: UsageRoute,
