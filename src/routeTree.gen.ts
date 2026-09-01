@@ -12,9 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as CatalogRouteImport } from './routes/catalog'
+import { Route as DeveloperRouteImport } from './routes/developer'
 import { Route as PhoneNumbersRouteImport } from './routes/phone-numbers'
 import { Route as RecordingsRouteImport } from './routes/recordings'
+import { Route as TeamRouteImport } from './routes/team'
 import { Route as TemplatesRouteImport } from './routes/templates'
+import { Route as UsageRouteImport } from './routes/usage'
 import { Route as WebhooksRouteImport } from './routes/webhooks'
 import { Route as AgentsIndexRouteImport } from './routes/agents.index'
 import { Route as AgentsIdRouteImport } from './routes/agents.$id'
@@ -39,6 +42,11 @@ const CatalogRoute = CatalogRouteImport.update({
   path: '/catalog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DeveloperRoute = DeveloperRouteImport.update({
+  id: '/developer',
+  path: '/developer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PhoneNumbersRoute = PhoneNumbersRouteImport.update({
   id: '/phone-numbers',
   path: '/phone-numbers',
@@ -49,9 +57,19 @@ const RecordingsRoute = RecordingsRouteImport.update({
   path: '/recordings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeamRoute = TeamRouteImport.update({
+  id: '/team',
+  path: '/team',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TemplatesRoute = TemplatesRouteImport.update({
   id: '/templates',
   path: '/templates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UsageRoute = UsageRouteImport.update({
+  id: '/usage',
+  path: '/usage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WebhooksRoute = WebhooksRouteImport.update({
@@ -99,9 +117,12 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
   '/catalog': typeof CatalogRoute
+  '/developer': typeof DeveloperRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
+  '/team': typeof TeamRoute
   '/templates': typeof TemplatesRoute
+  '/usage': typeof UsageRoute
   '/webhooks': typeof WebhooksRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
@@ -115,9 +136,12 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
   '/catalog': typeof CatalogRoute
+  '/developer': typeof DeveloperRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
+  '/team': typeof TeamRoute
   '/templates': typeof TemplatesRoute
+  '/usage': typeof UsageRoute
   '/webhooks': typeof WebhooksRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
@@ -132,9 +156,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/appointments': typeof AppointmentsRoute
   '/catalog': typeof CatalogRoute
+  '/developer': typeof DeveloperRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
+  '/team': typeof TeamRoute
   '/templates': typeof TemplatesRoute
+  '/usage': typeof UsageRoute
   '/webhooks': typeof WebhooksRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
@@ -150,9 +177,12 @@ export interface FileRouteTypes {
     | '/'
     | '/appointments'
     | '/catalog'
+    | '/developer'
     | '/phone-numbers'
     | '/recordings'
+    | '/team'
     | '/templates'
+    | '/usage'
     | '/webhooks'
     | '/agents/$id'
     | '/agents/new'
@@ -166,9 +196,12 @@ export interface FileRouteTypes {
     | '/'
     | '/appointments'
     | '/catalog'
+    | '/developer'
     | '/phone-numbers'
     | '/recordings'
+    | '/team'
     | '/templates'
+    | '/usage'
     | '/webhooks'
     | '/agents/$id'
     | '/agents/new'
@@ -182,9 +215,12 @@ export interface FileRouteTypes {
     | '/'
     | '/appointments'
     | '/catalog'
+    | '/developer'
     | '/phone-numbers'
     | '/recordings'
+    | '/team'
     | '/templates'
+    | '/usage'
     | '/webhooks'
     | '/agents/$id'
     | '/agents/new'
@@ -199,9 +235,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppointmentsRoute: typeof AppointmentsRoute
   CatalogRoute: typeof CatalogRoute
+  DeveloperRoute: typeof DeveloperRoute
   PhoneNumbersRoute: typeof PhoneNumbersRoute
   RecordingsRoute: typeof RecordingsRoute
+  TeamRoute: typeof TeamRoute
   TemplatesRoute: typeof TemplatesRoute
+  UsageRoute: typeof UsageRoute
   WebhooksRoute: typeof WebhooksRoute
   AgentsIdRoute: typeof AgentsIdRoute
   AgentsNewRoute: typeof AgentsNewRoute
@@ -235,6 +274,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CatalogRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/developer': {
+      id: '/developer'
+      path: '/developer'
+      fullPath: '/developer'
+      preLoaderRoute: typeof DeveloperRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/phone-numbers': {
       id: '/phone-numbers'
       path: '/phone-numbers'
@@ -249,11 +295,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RecordingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/team': {
+      id: '/team'
+      path: '/team'
+      fullPath: '/team'
+      preLoaderRoute: typeof TeamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/templates': {
       id: '/templates'
       path: '/templates'
       fullPath: '/templates'
       preLoaderRoute: typeof TemplatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/usage': {
+      id: '/usage'
+      path: '/usage'
+      fullPath: '/usage'
+      preLoaderRoute: typeof UsageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/webhooks': {
@@ -319,9 +379,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppointmentsRoute: AppointmentsRoute,
   CatalogRoute: CatalogRoute,
+  DeveloperRoute: DeveloperRoute,
   PhoneNumbersRoute: PhoneNumbersRoute,
   RecordingsRoute: RecordingsRoute,
+  TeamRoute: TeamRoute,
   TemplatesRoute: TemplatesRoute,
+  UsageRoute: UsageRoute,
   WebhooksRoute: WebhooksRoute,
   AgentsIdRoute: AgentsIdRoute,
   AgentsNewRoute: AgentsNewRoute,

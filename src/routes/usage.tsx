@@ -53,9 +53,9 @@ function UsagePage() {
       />
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Credit balance" value={rupees(metrics?.credits ?? 0)} note={metrics?.creditsNote} icon={CreditCard} />
-        <StatCard label="Calls this month" value={num(metrics?.calls ?? 0)} delta={metrics?.callsDelta} icon={PhoneCall} />
-        <StatCard label="Voice minutes" value={num(metrics?.minutes ?? 0)} delta={metrics?.minutesDelta} icon={Timer} />
+        <StatCard label="Credit balance" value={rupees(metrics?.credits ?? 0)} note={metrics?.creditsNote ?? ""} icon={CreditCard} />
+        <StatCard label="Calls this month" value={num(metrics?.calls ?? 0)} delta={metrics?.callsDelta ?? ""} icon={PhoneCall} />
+        <StatCard label="Voice minutes" value={num(metrics?.minutes ?? 0)} delta={metrics?.minutesDelta ?? ""} icon={Timer} />
         <StatCard label="Avg. cost / call" value={rupees(4.6)} note="Last 30 days" icon={Wallet} />
       </div>
 
