@@ -27,8 +27,11 @@ import { Route as AgentsIdRouteImport } from './routes/agents.$id'
 import { Route as AgentsNewRouteImport } from './routes/agents.new'
 import { Route as CallsIndexRouteImport } from './routes/calls.index'
 import { Route as CallsIdRouteImport } from './routes/calls.$id'
+import { Route as DeveloperIndexRouteImport } from './routes/developer.index'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
+import { Route as DeveloperProjectsIndexRouteImport } from './routes/developer.projects.index'
+import { Route as DeveloperProjectsNewRouteImport } from './routes/developer.projects.new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -120,6 +123,11 @@ const CallsIdRoute = CallsIdRouteImport.update({
   path: '/calls/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DeveloperIndexRoute = DeveloperIndexRouteImport.update({
+  id: '/developer/',
+  path: '/developer/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrdersIndexRoute = OrdersIndexRouteImport.update({
   id: '/orders/',
   path: '/orders/',
@@ -128,6 +136,16 @@ const OrdersIndexRoute = OrdersIndexRouteImport.update({
 const OrdersIdRoute = OrdersIdRouteImport.update({
   id: '/orders/$id',
   path: '/orders/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeveloperProjectsIndexRoute = DeveloperProjectsIndexRouteImport.update({
+  id: '/developer/projects/',
+  path: '/developer/projects/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DeveloperProjectsNewRoute = DeveloperProjectsNewRouteImport.update({
+  id: '/developer/projects/new',
+  path: '/developer/projects/new',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -151,7 +169,10 @@ export interface FileRoutesByFullPath {
   '/orders/$id': typeof OrdersIdRoute
   '/agents/': typeof AgentsIndexRoute
   '/calls/': typeof CallsIndexRoute
+  '/developer/': typeof DeveloperIndexRoute
   '/orders/': typeof OrdersIndexRoute
+  '/developer/projects/new': typeof DeveloperProjectsNewRoute
+  '/developer/projects/': typeof DeveloperProjectsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -173,7 +194,10 @@ export interface FileRoutesByTo {
   '/orders/$id': typeof OrdersIdRoute
   '/agents': typeof AgentsIndexRoute
   '/calls': typeof CallsIndexRoute
+  '/developer': typeof DeveloperIndexRoute
   '/orders': typeof OrdersIndexRoute
+  '/developer/projects/new': typeof DeveloperProjectsNewRoute
+  '/developer/projects': typeof DeveloperProjectsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -196,7 +220,10 @@ export interface FileRoutesById {
   '/orders/$id': typeof OrdersIdRoute
   '/agents/': typeof AgentsIndexRoute
   '/calls/': typeof CallsIndexRoute
+  '/developer/': typeof DeveloperIndexRoute
   '/orders/': typeof OrdersIndexRoute
+  '/developer/projects/new': typeof DeveloperProjectsNewRoute
+  '/developer/projects/': typeof DeveloperProjectsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -220,7 +247,10 @@ export interface FileRouteTypes {
     | '/orders/$id'
     | '/agents/'
     | '/calls/'
+    | '/developer/'
     | '/orders/'
+    | '/developer/projects/new'
+    | '/developer/projects/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -242,7 +272,10 @@ export interface FileRouteTypes {
     | '/orders/$id'
     | '/agents'
     | '/calls'
+    | '/developer'
     | '/orders'
+    | '/developer/projects/new'
+    | '/developer/projects'
   id:
     | '__root__'
     | '/'
@@ -264,7 +297,10 @@ export interface FileRouteTypes {
     | '/orders/$id'
     | '/agents/'
     | '/calls/'
+    | '/developer/'
     | '/orders/'
+    | '/developer/projects/new'
+    | '/developer/projects/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -287,7 +323,10 @@ export interface RootRouteChildren {
   OrdersIdRoute: typeof OrdersIdRoute
   AgentsIndexRoute: typeof AgentsIndexRoute
   CallsIndexRoute: typeof CallsIndexRoute
+  DeveloperIndexRoute: typeof DeveloperIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
+  DeveloperProjectsNewRoute: typeof DeveloperProjectsNewRoute
+  DeveloperProjectsIndexRoute: typeof DeveloperProjectsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -418,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CallsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/developer/': {
+      id: '/developer/'
+      path: '/developer'
+      fullPath: '/developer/'
+      preLoaderRoute: typeof DeveloperIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/orders/': {
       id: '/orders/'
       path: '/orders'
@@ -430,6 +476,20 @@ declare module '@tanstack/react-router' {
       path: '/orders/$id'
       fullPath: '/orders/$id'
       preLoaderRoute: typeof OrdersIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/developer/projects/': {
+      id: '/developer/projects/'
+      path: '/developer/projects'
+      fullPath: '/developer/projects/'
+      preLoaderRoute: typeof DeveloperProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/developer/projects/new': {
+      id: '/developer/projects/new'
+      path: '/developer/projects/new'
+      fullPath: '/developer/projects/new'
+      preLoaderRoute: typeof DeveloperProjectsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -455,7 +515,10 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersIdRoute: OrdersIdRoute,
   AgentsIndexRoute: AgentsIndexRoute,
   CallsIndexRoute: CallsIndexRoute,
+  DeveloperIndexRoute: DeveloperIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,
+  DeveloperProjectsNewRoute: DeveloperProjectsNewRoute,
+  DeveloperProjectsIndexRoute: DeveloperProjectsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
