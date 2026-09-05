@@ -108,7 +108,7 @@ function FileNode({
 }: {
   node: ProjectFile;
   depth: number;
-  activeId?: string;
+  activeId?: string | undefined;
   onSelect: (file: ProjectFile) => void;
 }) {
   const [open, setOpen] = useState(depth < 1);
@@ -158,7 +158,7 @@ export function FileTree({
   onSelect,
 }: {
   files: ProjectFile[];
-  activeId?: string;
+  activeId?: string | undefined;
   onSelect: (file: ProjectFile) => void;
 }) {
   return (
