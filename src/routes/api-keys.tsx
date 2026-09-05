@@ -11,15 +11,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useApiKeys } from "@/hooks/use-platform";
 import { dateTime, num, relative } from "@/lib/format";
 
-export const Route = createFileRoute("/developer")({
+export const Route = createFileRoute("/api-keys")({
   head: () => ({
     meta: [
-      { title: "Developer — AI Platform" },
+      { title: "API keys — AI Platform" },
       {
         name: "description",
         content: "API keys, REST endpoints and usage limits for building on the AI Platform voice agent API.",
       },
-      { property: "og:title", content: "Developer — AI Platform" },
+      { property: "og:title", content: "API keys — AI Platform" },
       { property: "og:description", content: "Manage API keys and explore the voice agent REST API." },
     ],
   }),
@@ -44,7 +44,7 @@ function DeveloperPage() {
     <AppShell>
       <PageHeader
         eyebrow="Platform"
-        title="Developer"
+        title="API keys"
         description="Keys, endpoints and quotas for the AI Platform API."
         actions={
           <Button
