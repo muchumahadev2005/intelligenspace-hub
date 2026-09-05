@@ -10,10 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiKeysRouteImport } from './routes/api-keys'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CatalogRouteImport } from './routes/catalog'
-import { Route as DeveloperRouteImport } from './routes/developer'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PhoneNumbersRouteImport } from './routes/phone-numbers'
 import { Route as RecordingsRouteImport } from './routes/recordings'
@@ -35,6 +35,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiKeysRoute = ApiKeysRouteImport.update({
+  id: '/api-keys',
+  path: '/api-keys',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppointmentsRoute = AppointmentsRouteImport.update({
   id: '/appointments',
   path: '/appointments',
@@ -48,11 +53,6 @@ const AuthRoute = AuthRouteImport.update({
 const CatalogRoute = CatalogRouteImport.update({
   id: '/catalog',
   path: '/catalog',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DeveloperRoute = DeveloperRouteImport.update({
-  id: '/developer',
-  path: '/developer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -133,10 +133,10 @@ const OrdersIdRoute = OrdersIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api-keys': typeof ApiKeysRoute
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
-  '/developer': typeof DeveloperRoute
   '/onboarding': typeof OnboardingRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
@@ -155,10 +155,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api-keys': typeof ApiKeysRoute
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
-  '/developer': typeof DeveloperRoute
   '/onboarding': typeof OnboardingRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
@@ -178,10 +178,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api-keys': typeof ApiKeysRoute
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
-  '/developer': typeof DeveloperRoute
   '/onboarding': typeof OnboardingRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
@@ -202,10 +202,10 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/api-keys'
     | '/appointments'
     | '/auth'
     | '/catalog'
-    | '/developer'
     | '/onboarding'
     | '/phone-numbers'
     | '/recordings'
@@ -224,10 +224,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/api-keys'
     | '/appointments'
     | '/auth'
     | '/catalog'
-    | '/developer'
     | '/onboarding'
     | '/phone-numbers'
     | '/recordings'
@@ -246,10 +246,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/api-keys'
     | '/appointments'
     | '/auth'
     | '/catalog'
-    | '/developer'
     | '/onboarding'
     | '/phone-numbers'
     | '/recordings'
@@ -269,10 +269,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiKeysRoute: typeof ApiKeysRoute
   AppointmentsRoute: typeof AppointmentsRoute
   AuthRoute: typeof AuthRoute
   CatalogRoute: typeof CatalogRoute
-  DeveloperRoute: typeof DeveloperRoute
   OnboardingRoute: typeof OnboardingRoute
   PhoneNumbersRoute: typeof PhoneNumbersRoute
   RecordingsRoute: typeof RecordingsRoute
@@ -299,6 +299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api-keys': {
+      id: '/api-keys'
+      path: '/api-keys'
+      fullPath: '/api-keys'
+      preLoaderRoute: typeof ApiKeysRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/appointments': {
       id: '/appointments'
       path: '/appointments'
@@ -318,13 +325,6 @@ declare module '@tanstack/react-router' {
       path: '/catalog'
       fullPath: '/catalog'
       preLoaderRoute: typeof CatalogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/developer': {
-      id: '/developer'
-      path: '/developer'
-      fullPath: '/developer'
-      preLoaderRoute: typeof DeveloperRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -437,10 +437,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiKeysRoute: ApiKeysRoute,
   AppointmentsRoute: AppointmentsRoute,
   AuthRoute: AuthRoute,
   CatalogRoute: CatalogRoute,
-  DeveloperRoute: DeveloperRoute,
   OnboardingRoute: OnboardingRoute,
   PhoneNumbersRoute: PhoneNumbersRoute,
   RecordingsRoute: RecordingsRoute,
