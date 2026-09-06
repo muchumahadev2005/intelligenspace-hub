@@ -33,6 +33,7 @@ import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as DeveloperProjectsIndexRouteImport } from './routes/developer.projects.index'
 import { Route as DeveloperProjectsIdRouteImport } from './routes/developer.projects.$id'
 import { Route as DeveloperProjectsNewRouteImport } from './routes/developer.projects.new'
+import { Route as DeveloperProjectsIdIndexRouteImport } from './routes/developer.projects.$id.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -154,6 +155,12 @@ const DeveloperProjectsNewRoute = DeveloperProjectsNewRouteImport.update({
   path: '/developer/projects/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DeveloperProjectsIdIndexRoute =
+  DeveloperProjectsIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DeveloperProjectsIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -177,9 +184,10 @@ export interface FileRoutesByFullPath {
   '/calls/': typeof CallsIndexRoute
   '/developer/': typeof DeveloperIndexRoute
   '/orders/': typeof OrdersIndexRoute
-  '/developer/projects/$id': typeof DeveloperProjectsIdRoute
+  '/developer/projects/$id': typeof DeveloperProjectsIdRouteWithChildren
   '/developer/projects/new': typeof DeveloperProjectsNewRoute
   '/developer/projects/': typeof DeveloperProjectsIndexRoute
+  '/developer/projects/$id/': typeof DeveloperProjectsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -203,9 +211,9 @@ export interface FileRoutesByTo {
   '/calls': typeof CallsIndexRoute
   '/developer': typeof DeveloperIndexRoute
   '/orders': typeof OrdersIndexRoute
-  '/developer/projects/$id': typeof DeveloperProjectsIdRoute
   '/developer/projects/new': typeof DeveloperProjectsNewRoute
   '/developer/projects': typeof DeveloperProjectsIndexRoute
+  '/developer/projects/$id': typeof DeveloperProjectsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -230,9 +238,10 @@ export interface FileRoutesById {
   '/calls/': typeof CallsIndexRoute
   '/developer/': typeof DeveloperIndexRoute
   '/orders/': typeof OrdersIndexRoute
-  '/developer/projects/$id': typeof DeveloperProjectsIdRoute
+  '/developer/projects/$id': typeof DeveloperProjectsIdRouteWithChildren
   '/developer/projects/new': typeof DeveloperProjectsNewRoute
   '/developer/projects/': typeof DeveloperProjectsIndexRoute
+  '/developer/projects/$id/': typeof DeveloperProjectsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -261,6 +270,7 @@ export interface FileRouteTypes {
     | '/developer/projects/$id'
     | '/developer/projects/new'
     | '/developer/projects/'
+    | '/developer/projects/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -284,9 +294,9 @@ export interface FileRouteTypes {
     | '/calls'
     | '/developer'
     | '/orders'
-    | '/developer/projects/$id'
     | '/developer/projects/new'
     | '/developer/projects'
+    | '/developer/projects/$id'
   id:
     | '__root__'
     | '/'
@@ -313,6 +323,7 @@ export interface FileRouteTypes {
     | '/developer/projects/$id'
     | '/developer/projects/new'
     | '/developer/projects/'
+    | '/developer/projects/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -337,7 +348,7 @@ export interface RootRouteChildren {
   CallsIndexRoute: typeof CallsIndexRoute
   DeveloperIndexRoute: typeof DeveloperIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
-  DeveloperProjectsIdRoute: typeof DeveloperProjectsIdRoute
+  DeveloperProjectsIdRoute: typeof DeveloperProjectsIdRouteWithChildren
   DeveloperProjectsNewRoute: typeof DeveloperProjectsNewRoute
   DeveloperProjectsIndexRoute: typeof DeveloperProjectsIndexRoute
 }
@@ -512,8 +523,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DeveloperProjectsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/developer/projects/$id/': {
+      id: '/developer/projects/$id/'
+      path: '/'
+      fullPath: '/developer/projects/$id/'
+      preLoaderRoute: typeof DeveloperProjectsIdIndexRouteImport
+      parentRoute: typeof DeveloperProjectsIdRoute
+    }
   }
 }
+
+interface DeveloperProjectsIdRouteChildren {
+  DeveloperProjectsIdIndexRoute: typeof DeveloperProjectsIdIndexRoute
+}
+
+const DeveloperProjectsIdRouteChildren: DeveloperProjectsIdRouteChildren = {
+  DeveloperProjectsIdIndexRoute: DeveloperProjectsIdIndexRoute,
+}
+
+const DeveloperProjectsIdRouteWithChildren =
+  DeveloperProjectsIdRoute._addFileChildren(DeveloperProjectsIdRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -537,7 +566,7 @@ const rootRouteChildren: RootRouteChildren = {
   CallsIndexRoute: CallsIndexRoute,
   DeveloperIndexRoute: DeveloperIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,
-  DeveloperProjectsIdRoute: DeveloperProjectsIdRoute,
+  DeveloperProjectsIdRoute: DeveloperProjectsIdRouteWithChildren,
   DeveloperProjectsNewRoute: DeveloperProjectsNewRoute,
   DeveloperProjectsIndexRoute: DeveloperProjectsIndexRoute,
 }
