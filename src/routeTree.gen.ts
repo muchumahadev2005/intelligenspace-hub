@@ -28,10 +28,22 @@ import { Route as AgentsNewRouteImport } from './routes/agents.new'
 import { Route as CallsIndexRouteImport } from './routes/calls.index'
 import { Route as CallsIdRouteImport } from './routes/calls.$id'
 import { Route as DeveloperIndexRouteImport } from './routes/developer.index'
+import { Route as DeveloperTasksRouteImport } from './routes/developer.tasks'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as DeveloperProjectsIndexRouteImport } from './routes/developer.projects.index'
+import { Route as DeveloperProjectsIdRouteImport } from './routes/developer.projects.$id'
 import { Route as DeveloperProjectsNewRouteImport } from './routes/developer.projects.new'
+import { Route as DeveloperProjectsIdIndexRouteImport } from './routes/developer.projects.$id.index'
+import { Route as DeveloperProjectsIdActivityRouteImport } from './routes/developer.projects.$id.activity'
+import { Route as DeveloperProjectsIdArchitectureRouteImport } from './routes/developer.projects.$id.architecture'
+import { Route as DeveloperProjectsIdCodingRouteImport } from './routes/developer.projects.$id.coding'
+import { Route as DeveloperProjectsIdDebugRouteImport } from './routes/developer.projects.$id.debug'
+import { Route as DeveloperProjectsIdDocumentationRouteImport } from './routes/developer.projects.$id.documentation'
+import { Route as DeveloperProjectsIdFilesRouteImport } from './routes/developer.projects.$id.files'
+import { Route as DeveloperProjectsIdReviewRouteImport } from './routes/developer.projects.$id.review'
+import { Route as DeveloperProjectsIdSecurityRouteImport } from './routes/developer.projects.$id.security'
+import { Route as DeveloperProjectsIdTestsRouteImport } from './routes/developer.projects.$id.tests'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -128,6 +140,11 @@ const DeveloperIndexRoute = DeveloperIndexRouteImport.update({
   path: '/developer/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DeveloperTasksRoute = DeveloperTasksRouteImport.update({
+  id: '/developer/tasks',
+  path: '/developer/tasks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrdersIndexRoute = OrdersIndexRouteImport.update({
   id: '/orders/',
   path: '/orders/',
@@ -143,11 +160,76 @@ const DeveloperProjectsIndexRoute = DeveloperProjectsIndexRouteImport.update({
   path: '/developer/projects/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DeveloperProjectsIdRoute = DeveloperProjectsIdRouteImport.update({
+  id: '/developer/projects/$id',
+  path: '/developer/projects/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DeveloperProjectsNewRoute = DeveloperProjectsNewRouteImport.update({
   id: '/developer/projects/new',
   path: '/developer/projects/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DeveloperProjectsIdIndexRoute =
+  DeveloperProjectsIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => DeveloperProjectsIdRoute,
+  } as any)
+const DeveloperProjectsIdActivityRoute =
+  DeveloperProjectsIdActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
+    getParentRoute: () => DeveloperProjectsIdRoute,
+  } as any)
+const DeveloperProjectsIdArchitectureRoute =
+  DeveloperProjectsIdArchitectureRouteImport.update({
+    id: '/architecture',
+    path: '/architecture',
+    getParentRoute: () => DeveloperProjectsIdRoute,
+  } as any)
+const DeveloperProjectsIdCodingRoute =
+  DeveloperProjectsIdCodingRouteImport.update({
+    id: '/coding',
+    path: '/coding',
+    getParentRoute: () => DeveloperProjectsIdRoute,
+  } as any)
+const DeveloperProjectsIdDebugRoute =
+  DeveloperProjectsIdDebugRouteImport.update({
+    id: '/debug',
+    path: '/debug',
+    getParentRoute: () => DeveloperProjectsIdRoute,
+  } as any)
+const DeveloperProjectsIdDocumentationRoute =
+  DeveloperProjectsIdDocumentationRouteImport.update({
+    id: '/documentation',
+    path: '/documentation',
+    getParentRoute: () => DeveloperProjectsIdRoute,
+  } as any)
+const DeveloperProjectsIdFilesRoute =
+  DeveloperProjectsIdFilesRouteImport.update({
+    id: '/files',
+    path: '/files',
+    getParentRoute: () => DeveloperProjectsIdRoute,
+  } as any)
+const DeveloperProjectsIdReviewRoute =
+  DeveloperProjectsIdReviewRouteImport.update({
+    id: '/review',
+    path: '/review',
+    getParentRoute: () => DeveloperProjectsIdRoute,
+  } as any)
+const DeveloperProjectsIdSecurityRoute =
+  DeveloperProjectsIdSecurityRouteImport.update({
+    id: '/security',
+    path: '/security',
+    getParentRoute: () => DeveloperProjectsIdRoute,
+  } as any)
+const DeveloperProjectsIdTestsRoute =
+  DeveloperProjectsIdTestsRouteImport.update({
+    id: '/tests',
+    path: '/tests',
+    getParentRoute: () => DeveloperProjectsIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -166,13 +248,25 @@ export interface FileRoutesByFullPath {
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
   '/calls/$id': typeof CallsIdRoute
+  '/developer/tasks': typeof DeveloperTasksRoute
   '/orders/$id': typeof OrdersIdRoute
   '/agents/': typeof AgentsIndexRoute
   '/calls/': typeof CallsIndexRoute
   '/developer/': typeof DeveloperIndexRoute
   '/orders/': typeof OrdersIndexRoute
+  '/developer/projects/$id': typeof DeveloperProjectsIdRouteWithChildren
   '/developer/projects/new': typeof DeveloperProjectsNewRoute
   '/developer/projects/': typeof DeveloperProjectsIndexRoute
+  '/developer/projects/$id/activity': typeof DeveloperProjectsIdActivityRoute
+  '/developer/projects/$id/architecture': typeof DeveloperProjectsIdArchitectureRoute
+  '/developer/projects/$id/coding': typeof DeveloperProjectsIdCodingRoute
+  '/developer/projects/$id/debug': typeof DeveloperProjectsIdDebugRoute
+  '/developer/projects/$id/documentation': typeof DeveloperProjectsIdDocumentationRoute
+  '/developer/projects/$id/files': typeof DeveloperProjectsIdFilesRoute
+  '/developer/projects/$id/review': typeof DeveloperProjectsIdReviewRoute
+  '/developer/projects/$id/security': typeof DeveloperProjectsIdSecurityRoute
+  '/developer/projects/$id/tests': typeof DeveloperProjectsIdTestsRoute
+  '/developer/projects/$id/': typeof DeveloperProjectsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -191,6 +285,7 @@ export interface FileRoutesByTo {
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
   '/calls/$id': typeof CallsIdRoute
+  '/developer/tasks': typeof DeveloperTasksRoute
   '/orders/$id': typeof OrdersIdRoute
   '/agents': typeof AgentsIndexRoute
   '/calls': typeof CallsIndexRoute
@@ -198,6 +293,16 @@ export interface FileRoutesByTo {
   '/orders': typeof OrdersIndexRoute
   '/developer/projects/new': typeof DeveloperProjectsNewRoute
   '/developer/projects': typeof DeveloperProjectsIndexRoute
+  '/developer/projects/$id/activity': typeof DeveloperProjectsIdActivityRoute
+  '/developer/projects/$id/architecture': typeof DeveloperProjectsIdArchitectureRoute
+  '/developer/projects/$id/coding': typeof DeveloperProjectsIdCodingRoute
+  '/developer/projects/$id/debug': typeof DeveloperProjectsIdDebugRoute
+  '/developer/projects/$id/documentation': typeof DeveloperProjectsIdDocumentationRoute
+  '/developer/projects/$id/files': typeof DeveloperProjectsIdFilesRoute
+  '/developer/projects/$id/review': typeof DeveloperProjectsIdReviewRoute
+  '/developer/projects/$id/security': typeof DeveloperProjectsIdSecurityRoute
+  '/developer/projects/$id/tests': typeof DeveloperProjectsIdTestsRoute
+  '/developer/projects/$id': typeof DeveloperProjectsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -217,13 +322,25 @@ export interface FileRoutesById {
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
   '/calls/$id': typeof CallsIdRoute
+  '/developer/tasks': typeof DeveloperTasksRoute
   '/orders/$id': typeof OrdersIdRoute
   '/agents/': typeof AgentsIndexRoute
   '/calls/': typeof CallsIndexRoute
   '/developer/': typeof DeveloperIndexRoute
   '/orders/': typeof OrdersIndexRoute
+  '/developer/projects/$id': typeof DeveloperProjectsIdRouteWithChildren
   '/developer/projects/new': typeof DeveloperProjectsNewRoute
   '/developer/projects/': typeof DeveloperProjectsIndexRoute
+  '/developer/projects/$id/activity': typeof DeveloperProjectsIdActivityRoute
+  '/developer/projects/$id/architecture': typeof DeveloperProjectsIdArchitectureRoute
+  '/developer/projects/$id/coding': typeof DeveloperProjectsIdCodingRoute
+  '/developer/projects/$id/debug': typeof DeveloperProjectsIdDebugRoute
+  '/developer/projects/$id/documentation': typeof DeveloperProjectsIdDocumentationRoute
+  '/developer/projects/$id/files': typeof DeveloperProjectsIdFilesRoute
+  '/developer/projects/$id/review': typeof DeveloperProjectsIdReviewRoute
+  '/developer/projects/$id/security': typeof DeveloperProjectsIdSecurityRoute
+  '/developer/projects/$id/tests': typeof DeveloperProjectsIdTestsRoute
+  '/developer/projects/$id/': typeof DeveloperProjectsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -244,13 +361,25 @@ export interface FileRouteTypes {
     | '/agents/$id'
     | '/agents/new'
     | '/calls/$id'
+    | '/developer/tasks'
     | '/orders/$id'
     | '/agents/'
     | '/calls/'
     | '/developer/'
     | '/orders/'
+    | '/developer/projects/$id'
     | '/developer/projects/new'
     | '/developer/projects/'
+    | '/developer/projects/$id/activity'
+    | '/developer/projects/$id/architecture'
+    | '/developer/projects/$id/coding'
+    | '/developer/projects/$id/debug'
+    | '/developer/projects/$id/documentation'
+    | '/developer/projects/$id/files'
+    | '/developer/projects/$id/review'
+    | '/developer/projects/$id/security'
+    | '/developer/projects/$id/tests'
+    | '/developer/projects/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -269,6 +398,7 @@ export interface FileRouteTypes {
     | '/agents/$id'
     | '/agents/new'
     | '/calls/$id'
+    | '/developer/tasks'
     | '/orders/$id'
     | '/agents'
     | '/calls'
@@ -276,6 +406,16 @@ export interface FileRouteTypes {
     | '/orders'
     | '/developer/projects/new'
     | '/developer/projects'
+    | '/developer/projects/$id/activity'
+    | '/developer/projects/$id/architecture'
+    | '/developer/projects/$id/coding'
+    | '/developer/projects/$id/debug'
+    | '/developer/projects/$id/documentation'
+    | '/developer/projects/$id/files'
+    | '/developer/projects/$id/review'
+    | '/developer/projects/$id/security'
+    | '/developer/projects/$id/tests'
+    | '/developer/projects/$id'
   id:
     | '__root__'
     | '/'
@@ -294,13 +434,25 @@ export interface FileRouteTypes {
     | '/agents/$id'
     | '/agents/new'
     | '/calls/$id'
+    | '/developer/tasks'
     | '/orders/$id'
     | '/agents/'
     | '/calls/'
     | '/developer/'
     | '/orders/'
+    | '/developer/projects/$id'
     | '/developer/projects/new'
     | '/developer/projects/'
+    | '/developer/projects/$id/activity'
+    | '/developer/projects/$id/architecture'
+    | '/developer/projects/$id/coding'
+    | '/developer/projects/$id/debug'
+    | '/developer/projects/$id/documentation'
+    | '/developer/projects/$id/files'
+    | '/developer/projects/$id/review'
+    | '/developer/projects/$id/security'
+    | '/developer/projects/$id/tests'
+    | '/developer/projects/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -320,11 +472,13 @@ export interface RootRouteChildren {
   AgentsIdRoute: typeof AgentsIdRoute
   AgentsNewRoute: typeof AgentsNewRoute
   CallsIdRoute: typeof CallsIdRoute
+  DeveloperTasksRoute: typeof DeveloperTasksRoute
   OrdersIdRoute: typeof OrdersIdRoute
   AgentsIndexRoute: typeof AgentsIndexRoute
   CallsIndexRoute: typeof CallsIndexRoute
   DeveloperIndexRoute: typeof DeveloperIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
+  DeveloperProjectsIdRoute: typeof DeveloperProjectsIdRouteWithChildren
   DeveloperProjectsNewRoute: typeof DeveloperProjectsNewRoute
   DeveloperProjectsIndexRoute: typeof DeveloperProjectsIndexRoute
 }
@@ -464,6 +618,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DeveloperIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/developer/tasks': {
+      id: '/developer/tasks'
+      path: '/developer/tasks'
+      fullPath: '/developer/tasks'
+      preLoaderRoute: typeof DeveloperTasksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/orders/': {
       id: '/orders/'
       path: '/orders'
@@ -485,6 +646,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DeveloperProjectsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/developer/projects/$id': {
+      id: '/developer/projects/$id'
+      path: '/developer/projects/$id'
+      fullPath: '/developer/projects/$id'
+      preLoaderRoute: typeof DeveloperProjectsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/developer/projects/new': {
       id: '/developer/projects/new'
       path: '/developer/projects/new'
@@ -492,8 +660,107 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DeveloperProjectsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/developer/projects/$id/': {
+      id: '/developer/projects/$id/'
+      path: '/'
+      fullPath: '/developer/projects/$id/'
+      preLoaderRoute: typeof DeveloperProjectsIdIndexRouteImport
+      parentRoute: typeof DeveloperProjectsIdRoute
+    }
+    '/developer/projects/$id/activity': {
+      id: '/developer/projects/$id/activity'
+      path: '/activity'
+      fullPath: '/developer/projects/$id/activity'
+      preLoaderRoute: typeof DeveloperProjectsIdActivityRouteImport
+      parentRoute: typeof DeveloperProjectsIdRoute
+    }
+    '/developer/projects/$id/architecture': {
+      id: '/developer/projects/$id/architecture'
+      path: '/architecture'
+      fullPath: '/developer/projects/$id/architecture'
+      preLoaderRoute: typeof DeveloperProjectsIdArchitectureRouteImport
+      parentRoute: typeof DeveloperProjectsIdRoute
+    }
+    '/developer/projects/$id/coding': {
+      id: '/developer/projects/$id/coding'
+      path: '/coding'
+      fullPath: '/developer/projects/$id/coding'
+      preLoaderRoute: typeof DeveloperProjectsIdCodingRouteImport
+      parentRoute: typeof DeveloperProjectsIdRoute
+    }
+    '/developer/projects/$id/debug': {
+      id: '/developer/projects/$id/debug'
+      path: '/debug'
+      fullPath: '/developer/projects/$id/debug'
+      preLoaderRoute: typeof DeveloperProjectsIdDebugRouteImport
+      parentRoute: typeof DeveloperProjectsIdRoute
+    }
+    '/developer/projects/$id/documentation': {
+      id: '/developer/projects/$id/documentation'
+      path: '/documentation'
+      fullPath: '/developer/projects/$id/documentation'
+      preLoaderRoute: typeof DeveloperProjectsIdDocumentationRouteImport
+      parentRoute: typeof DeveloperProjectsIdRoute
+    }
+    '/developer/projects/$id/files': {
+      id: '/developer/projects/$id/files'
+      path: '/files'
+      fullPath: '/developer/projects/$id/files'
+      preLoaderRoute: typeof DeveloperProjectsIdFilesRouteImport
+      parentRoute: typeof DeveloperProjectsIdRoute
+    }
+    '/developer/projects/$id/review': {
+      id: '/developer/projects/$id/review'
+      path: '/review'
+      fullPath: '/developer/projects/$id/review'
+      preLoaderRoute: typeof DeveloperProjectsIdReviewRouteImport
+      parentRoute: typeof DeveloperProjectsIdRoute
+    }
+    '/developer/projects/$id/security': {
+      id: '/developer/projects/$id/security'
+      path: '/security'
+      fullPath: '/developer/projects/$id/security'
+      preLoaderRoute: typeof DeveloperProjectsIdSecurityRouteImport
+      parentRoute: typeof DeveloperProjectsIdRoute
+    }
+    '/developer/projects/$id/tests': {
+      id: '/developer/projects/$id/tests'
+      path: '/tests'
+      fullPath: '/developer/projects/$id/tests'
+      preLoaderRoute: typeof DeveloperProjectsIdTestsRouteImport
+      parentRoute: typeof DeveloperProjectsIdRoute
+    }
   }
 }
+
+interface DeveloperProjectsIdRouteChildren {
+  DeveloperProjectsIdActivityRoute: typeof DeveloperProjectsIdActivityRoute
+  DeveloperProjectsIdArchitectureRoute: typeof DeveloperProjectsIdArchitectureRoute
+  DeveloperProjectsIdCodingRoute: typeof DeveloperProjectsIdCodingRoute
+  DeveloperProjectsIdDebugRoute: typeof DeveloperProjectsIdDebugRoute
+  DeveloperProjectsIdDocumentationRoute: typeof DeveloperProjectsIdDocumentationRoute
+  DeveloperProjectsIdFilesRoute: typeof DeveloperProjectsIdFilesRoute
+  DeveloperProjectsIdReviewRoute: typeof DeveloperProjectsIdReviewRoute
+  DeveloperProjectsIdSecurityRoute: typeof DeveloperProjectsIdSecurityRoute
+  DeveloperProjectsIdTestsRoute: typeof DeveloperProjectsIdTestsRoute
+  DeveloperProjectsIdIndexRoute: typeof DeveloperProjectsIdIndexRoute
+}
+
+const DeveloperProjectsIdRouteChildren: DeveloperProjectsIdRouteChildren = {
+  DeveloperProjectsIdActivityRoute: DeveloperProjectsIdActivityRoute,
+  DeveloperProjectsIdArchitectureRoute: DeveloperProjectsIdArchitectureRoute,
+  DeveloperProjectsIdCodingRoute: DeveloperProjectsIdCodingRoute,
+  DeveloperProjectsIdDebugRoute: DeveloperProjectsIdDebugRoute,
+  DeveloperProjectsIdDocumentationRoute: DeveloperProjectsIdDocumentationRoute,
+  DeveloperProjectsIdFilesRoute: DeveloperProjectsIdFilesRoute,
+  DeveloperProjectsIdReviewRoute: DeveloperProjectsIdReviewRoute,
+  DeveloperProjectsIdSecurityRoute: DeveloperProjectsIdSecurityRoute,
+  DeveloperProjectsIdTestsRoute: DeveloperProjectsIdTestsRoute,
+  DeveloperProjectsIdIndexRoute: DeveloperProjectsIdIndexRoute,
+}
+
+const DeveloperProjectsIdRouteWithChildren =
+  DeveloperProjectsIdRoute._addFileChildren(DeveloperProjectsIdRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -512,11 +779,13 @@ const rootRouteChildren: RootRouteChildren = {
   AgentsIdRoute: AgentsIdRoute,
   AgentsNewRoute: AgentsNewRoute,
   CallsIdRoute: CallsIdRoute,
+  DeveloperTasksRoute: DeveloperTasksRoute,
   OrdersIdRoute: OrdersIdRoute,
   AgentsIndexRoute: AgentsIndexRoute,
   CallsIndexRoute: CallsIndexRoute,
   DeveloperIndexRoute: DeveloperIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,
+  DeveloperProjectsIdRoute: DeveloperProjectsIdRouteWithChildren,
   DeveloperProjectsNewRoute: DeveloperProjectsNewRoute,
   DeveloperProjectsIndexRoute: DeveloperProjectsIndexRoute,
 }
