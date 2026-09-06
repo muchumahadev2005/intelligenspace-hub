@@ -31,6 +31,7 @@ import { Route as DeveloperIndexRouteImport } from './routes/developer.index'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as DeveloperProjectsIndexRouteImport } from './routes/developer.projects.index'
+import { Route as DeveloperProjectsIdRouteImport } from './routes/developer.projects.$id'
 import { Route as DeveloperProjectsNewRouteImport } from './routes/developer.projects.new'
 
 const IndexRoute = IndexRouteImport.update({
@@ -143,6 +144,11 @@ const DeveloperProjectsIndexRoute = DeveloperProjectsIndexRouteImport.update({
   path: '/developer/projects/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DeveloperProjectsIdRoute = DeveloperProjectsIdRouteImport.update({
+  id: '/developer/projects/$id',
+  path: '/developer/projects/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DeveloperProjectsNewRoute = DeveloperProjectsNewRouteImport.update({
   id: '/developer/projects/new',
   path: '/developer/projects/new',
@@ -171,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/calls/': typeof CallsIndexRoute
   '/developer/': typeof DeveloperIndexRoute
   '/orders/': typeof OrdersIndexRoute
+  '/developer/projects/$id': typeof DeveloperProjectsIdRoute
   '/developer/projects/new': typeof DeveloperProjectsNewRoute
   '/developer/projects/': typeof DeveloperProjectsIndexRoute
 }
@@ -196,6 +203,7 @@ export interface FileRoutesByTo {
   '/calls': typeof CallsIndexRoute
   '/developer': typeof DeveloperIndexRoute
   '/orders': typeof OrdersIndexRoute
+  '/developer/projects/$id': typeof DeveloperProjectsIdRoute
   '/developer/projects/new': typeof DeveloperProjectsNewRoute
   '/developer/projects': typeof DeveloperProjectsIndexRoute
 }
@@ -222,6 +230,7 @@ export interface FileRoutesById {
   '/calls/': typeof CallsIndexRoute
   '/developer/': typeof DeveloperIndexRoute
   '/orders/': typeof OrdersIndexRoute
+  '/developer/projects/$id': typeof DeveloperProjectsIdRoute
   '/developer/projects/new': typeof DeveloperProjectsNewRoute
   '/developer/projects/': typeof DeveloperProjectsIndexRoute
 }
@@ -249,6 +258,7 @@ export interface FileRouteTypes {
     | '/calls/'
     | '/developer/'
     | '/orders/'
+    | '/developer/projects/$id'
     | '/developer/projects/new'
     | '/developer/projects/'
   fileRoutesByTo: FileRoutesByTo
@@ -274,6 +284,7 @@ export interface FileRouteTypes {
     | '/calls'
     | '/developer'
     | '/orders'
+    | '/developer/projects/$id'
     | '/developer/projects/new'
     | '/developer/projects'
   id:
@@ -299,6 +310,7 @@ export interface FileRouteTypes {
     | '/calls/'
     | '/developer/'
     | '/orders/'
+    | '/developer/projects/$id'
     | '/developer/projects/new'
     | '/developer/projects/'
   fileRoutesById: FileRoutesById
@@ -325,6 +337,7 @@ export interface RootRouteChildren {
   CallsIndexRoute: typeof CallsIndexRoute
   DeveloperIndexRoute: typeof DeveloperIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
+  DeveloperProjectsIdRoute: typeof DeveloperProjectsIdRoute
   DeveloperProjectsNewRoute: typeof DeveloperProjectsNewRoute
   DeveloperProjectsIndexRoute: typeof DeveloperProjectsIndexRoute
 }
@@ -485,6 +498,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DeveloperProjectsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/developer/projects/$id': {
+      id: '/developer/projects/$id'
+      path: '/developer/projects/$id'
+      fullPath: '/developer/projects/$id'
+      preLoaderRoute: typeof DeveloperProjectsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/developer/projects/new': {
       id: '/developer/projects/new'
       path: '/developer/projects/new'
@@ -517,6 +537,7 @@ const rootRouteChildren: RootRouteChildren = {
   CallsIndexRoute: CallsIndexRoute,
   DeveloperIndexRoute: DeveloperIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,
+  DeveloperProjectsIdRoute: DeveloperProjectsIdRoute,
   DeveloperProjectsNewRoute: DeveloperProjectsNewRoute,
   DeveloperProjectsIndexRoute: DeveloperProjectsIndexRoute,
 }
