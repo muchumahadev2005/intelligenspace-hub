@@ -135,6 +135,8 @@ function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
 
       <button
         onClick={onOpenPalette}
+        aria-label="Search everything"
+
         className="ml-auto flex h-9 items-center gap-2 rounded-lg border border-border bg-surface-2/50 px-3 text-sm text-muted-foreground transition-colors hover:bg-accent lg:ml-0 lg:w-80"
       >
         <Search className="size-4" aria-hidden />

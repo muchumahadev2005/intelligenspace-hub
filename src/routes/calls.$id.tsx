@@ -7,20 +7,36 @@ import { ErrorState, TableSkeleton } from "@/components/shared/states";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { calls } from "@/mock/data";
 import { useCall } from "@/hooks/use-platform";
 import { dateTime, duration, money } from "@/lib/format";
 
 export const Route = createFileRoute("/calls/$id")({
-  head: () => ({
-    meta: [
-      { title: "Call detail — AI Platform" },
-      { name: "description", content: "Full transcript, sentiment, outcome and cost breakdown for a single AI-handled call." },
-      { property: "og:title", content: "Call detail — AI Platform" },
-      { property: "og:description", content: "Review the transcript and outcome of an AI-handled conversation." },
-    ],
-  }),
+  head: ({ params }) => {
+    const call = calls.find((c) => c.id === params.id);
+    const title = call
+      ? `Call ${call.reference} · ${call.customer} — AI Platform`
+      : "Call detail — AI Platform";
+    const description = call
+      ? `${call.summary} ${call.direction} call handled by an AI agent.`
+      : "Full transcript, sentiment, outcome and cost breakdown for a single AI-handled call.";
+    const url = `https://intelligenspace-hub.lovable.app/calls/${params.id}`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [{ rel: "canonical", href: url }],
+    };
+  },
   component: CallDetail,
 });
+
 
 function CallDetail() {
   const { id } = Route.useParams();

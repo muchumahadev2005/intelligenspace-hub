@@ -11,20 +11,34 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { agents } from "@/mock/data";
 import { useAgent, useCalls } from "@/hooks/use-platform";
 import { dateTime, duration, num } from "@/lib/format";
 
 export const Route = createFileRoute("/agents/$id")({
-  head: () => ({
-    meta: [
-      { title: "Agent details — AI Platform" },
-      { name: "description", content: "Inspect configuration, performance and recent conversations for an AI agent." },
-      { property: "og:title", content: "Agent details — AI Platform" },
-      { property: "og:description", content: "Tune instructions, voice and tools for this AI agent." },
-    ],
-  }),
+  head: ({ params }) => {
+    const agent = agents.find((a) => a.id === params.id);
+    const title = agent ? `${agent.name} — AI Platform` : "Agent details — AI Platform";
+    const description = agent
+      ? `${agent.description} ${agent.type === "voice" ? "Voice" : "Chat"} agent on ${agent.model}, ${agent.successRate}% success across ${agent.calls} conversations.`
+      : "Inspect configuration, performance and recent conversations for an AI agent.";
+    const url = `https://intelligenspace-hub.lovable.app/agents/${params.id}`;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+        { name: "twitter:card", content: "summary_large_image" },
+      ],
+      links: [{ rel: "canonical", href: url }],
+    };
+  },
   component: AgentDetail,
 });
+
 
 function AgentDetail() {
   const { id } = Route.useParams();

@@ -19,6 +19,7 @@ import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PhoneNumbersRouteImport } from './routes/phone-numbers'
 import { Route as RecordingsRouteImport } from './routes/recordings'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TeamRouteImport } from './routes/team'
 import { Route as TemplatesRouteImport } from './routes/templates'
 import { Route as UsageRouteImport } from './routes/usage'
@@ -95,6 +96,11 @@ const RecordingsRoute = RecordingsRouteImport.update({
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeamRoute = TeamRouteImport.update({
@@ -255,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
   '/settings': typeof SettingsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/team': typeof TeamRoute
   '/templates': typeof TemplatesRoute
   '/usage': typeof UsageRoute
@@ -294,6 +301,7 @@ export interface FileRoutesByTo {
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
   '/settings': typeof SettingsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/team': typeof TeamRoute
   '/templates': typeof TemplatesRoute
   '/usage': typeof UsageRoute
@@ -333,6 +341,7 @@ export interface FileRoutesById {
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
   '/settings': typeof SettingsRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/team': typeof TeamRoute
   '/templates': typeof TemplatesRoute
   '/usage': typeof UsageRoute
@@ -374,6 +383,7 @@ export interface FileRouteTypes {
     | '/phone-numbers'
     | '/recordings'
     | '/settings'
+    | '/sitemap.xml'
     | '/team'
     | '/templates'
     | '/usage'
@@ -413,6 +423,7 @@ export interface FileRouteTypes {
     | '/phone-numbers'
     | '/recordings'
     | '/settings'
+    | '/sitemap.xml'
     | '/team'
     | '/templates'
     | '/usage'
@@ -451,6 +462,7 @@ export interface FileRouteTypes {
     | '/phone-numbers'
     | '/recordings'
     | '/settings'
+    | '/sitemap.xml'
     | '/team'
     | '/templates'
     | '/usage'
@@ -491,6 +503,7 @@ export interface RootRouteChildren {
   PhoneNumbersRoute: typeof PhoneNumbersRoute
   RecordingsRoute: typeof RecordingsRoute
   SettingsRoute: typeof SettingsRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TeamRoute: typeof TeamRoute
   TemplatesRoute: typeof TemplatesRoute
   UsageRoute: typeof UsageRoute
@@ -580,6 +593,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/team': {
@@ -814,6 +834,7 @@ const rootRouteChildren: RootRouteChildren = {
   PhoneNumbersRoute: PhoneNumbersRoute,
   RecordingsRoute: RecordingsRoute,
   SettingsRoute: SettingsRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TeamRoute: TeamRoute,
   TemplatesRoute: TemplatesRoute,
   UsageRoute: UsageRoute,
