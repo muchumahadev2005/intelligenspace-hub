@@ -42,7 +42,7 @@ function FilesPage() {
       <Panel title="Explorer" description={project.repository.fullName}>
         <FileTree files={project.files} activeId={active?.id} onSelect={setSelected} />
       </Panel>
-      <Panel title={active?.path ?? "No file selected"} description={active?.language}>
+      <Panel title={active?.path ?? "No file selected"} description={active?.language ?? undefined}>
         {active?.content ? (
           <CodeBlock code={active.content} />
         ) : (
