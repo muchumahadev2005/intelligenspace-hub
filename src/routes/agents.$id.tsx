@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { agents } from "@/mock/data";
 import { useAgent, useCalls } from "@/hooks/use-platform";
 import { dateTime, duration, num } from "@/lib/format";
 

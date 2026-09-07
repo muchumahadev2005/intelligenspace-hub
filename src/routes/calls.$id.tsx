@@ -7,6 +7,7 @@ import { ErrorState, TableSkeleton } from "@/components/shared/states";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { calls } from "@/mock/data";
 import { useCall } from "@/hooks/use-platform";
 import { dateTime, duration, money } from "@/lib/format";
 
