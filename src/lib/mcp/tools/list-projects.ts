@@ -24,7 +24,7 @@ export default defineTool({
     }));
     return {
       content: [{ type: "text", text: JSON.stringify(rows, null, 2) }],
-      structuredContent: { projects: rows },
+      structuredContent: { projects: JSON.parse(JSON.stringify(rows)) },
     };
   },
 });

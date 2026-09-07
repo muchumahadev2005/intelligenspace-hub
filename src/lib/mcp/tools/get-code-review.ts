@@ -13,7 +13,7 @@ export default defineTool({
     if (!review) throw new ToolError(`No code review found for project "${projectId}".`);
     return {
       content: [{ type: "text", text: JSON.stringify(review, null, 2) }],
-      structuredContent: { review },
+      structuredContent: { review: JSON.parse(JSON.stringify(review)) },
     };
   },
 });
