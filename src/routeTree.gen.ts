@@ -14,6 +14,7 @@ import { Route as ApiKeysRouteImport } from './routes/api-keys'
 import { Route as AppointmentsRouteImport } from './routes/appointments'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CatalogRouteImport } from './routes/catalog'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PhoneNumbersRouteImport } from './routes/phone-numbers'
 import { Route as RecordingsRouteImport } from './routes/recordings'
@@ -22,6 +23,7 @@ import { Route as TeamRouteImport } from './routes/team'
 import { Route as TemplatesRouteImport } from './routes/templates'
 import { Route as UsageRouteImport } from './routes/usage'
 import { Route as WebhooksRouteImport } from './routes/webhooks'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as AgentsIndexRouteImport } from './routes/agents.index'
 import { Route as AgentsIdRouteImport } from './routes/agents.$id'
 import { Route as AgentsNewRouteImport } from './routes/agents.new'
@@ -70,6 +72,11 @@ const CatalogRoute = CatalogRouteImport.update({
   path: '/catalog',
   getParentRoute: () => rootRouteImport,
 } as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -110,6 +117,12 @@ const WebhooksRoute = WebhooksRouteImport.update({
   path: '/webhooks',
   getParentRoute: () => rootRouteImport,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AgentsIndexRoute = AgentsIndexRouteImport.update({
   id: '/agents/',
   path: '/agents/',
@@ -237,6 +250,7 @@ export interface FileRoutesByFullPath {
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
+  '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
@@ -245,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/templates': typeof TemplatesRoute
   '/usage': typeof UsageRoute
   '/webhooks': typeof WebhooksRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
   '/calls/$id': typeof CallsIdRoute
@@ -274,6 +289,7 @@ export interface FileRoutesByTo {
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
+  '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
@@ -282,6 +298,7 @@ export interface FileRoutesByTo {
   '/templates': typeof TemplatesRoute
   '/usage': typeof UsageRoute
   '/webhooks': typeof WebhooksRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
   '/calls/$id': typeof CallsIdRoute
@@ -311,6 +328,7 @@ export interface FileRoutesById {
   '/appointments': typeof AppointmentsRoute
   '/auth': typeof AuthRoute
   '/catalog': typeof CatalogRoute
+  '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
   '/phone-numbers': typeof PhoneNumbersRoute
   '/recordings': typeof RecordingsRoute
@@ -319,6 +337,7 @@ export interface FileRoutesById {
   '/templates': typeof TemplatesRoute
   '/usage': typeof UsageRoute
   '/webhooks': typeof WebhooksRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
   '/calls/$id': typeof CallsIdRoute
@@ -350,6 +369,7 @@ export interface FileRouteTypes {
     | '/appointments'
     | '/auth'
     | '/catalog'
+    | '/mcp'
     | '/onboarding'
     | '/phone-numbers'
     | '/recordings'
@@ -358,6 +378,7 @@ export interface FileRouteTypes {
     | '/templates'
     | '/usage'
     | '/webhooks'
+    | '/.well-known/oauth-protected-resource'
     | '/agents/$id'
     | '/agents/new'
     | '/calls/$id'
@@ -387,6 +408,7 @@ export interface FileRouteTypes {
     | '/appointments'
     | '/auth'
     | '/catalog'
+    | '/mcp'
     | '/onboarding'
     | '/phone-numbers'
     | '/recordings'
@@ -395,6 +417,7 @@ export interface FileRouteTypes {
     | '/templates'
     | '/usage'
     | '/webhooks'
+    | '/.well-known/oauth-protected-resource'
     | '/agents/$id'
     | '/agents/new'
     | '/calls/$id'
@@ -423,6 +446,7 @@ export interface FileRouteTypes {
     | '/appointments'
     | '/auth'
     | '/catalog'
+    | '/mcp'
     | '/onboarding'
     | '/phone-numbers'
     | '/recordings'
@@ -431,6 +455,7 @@ export interface FileRouteTypes {
     | '/templates'
     | '/usage'
     | '/webhooks'
+    | '/.well-known/oauth-protected-resource'
     | '/agents/$id'
     | '/agents/new'
     | '/calls/$id'
@@ -461,6 +486,7 @@ export interface RootRouteChildren {
   AppointmentsRoute: typeof AppointmentsRoute
   AuthRoute: typeof AuthRoute
   CatalogRoute: typeof CatalogRoute
+  McpRoute: typeof McpRoute
   OnboardingRoute: typeof OnboardingRoute
   PhoneNumbersRoute: typeof PhoneNumbersRoute
   RecordingsRoute: typeof RecordingsRoute
@@ -469,6 +495,7 @@ export interface RootRouteChildren {
   TemplatesRoute: typeof TemplatesRoute
   UsageRoute: typeof UsageRoute
   WebhooksRoute: typeof WebhooksRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AgentsIdRoute: typeof AgentsIdRoute
   AgentsNewRoute: typeof AgentsNewRoute
   CallsIdRoute: typeof CallsIdRoute
@@ -518,6 +545,13 @@ declare module '@tanstack/react-router' {
       path: '/catalog'
       fullPath: '/catalog'
       preLoaderRoute: typeof CatalogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -574,6 +608,13 @@ declare module '@tanstack/react-router' {
       path: '/webhooks'
       fullPath: '/webhooks'
       preLoaderRoute: typeof WebhooksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agents/': {
@@ -768,6 +809,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppointmentsRoute: AppointmentsRoute,
   AuthRoute: AuthRoute,
   CatalogRoute: CatalogRoute,
+  McpRoute: McpRoute,
   OnboardingRoute: OnboardingRoute,
   PhoneNumbersRoute: PhoneNumbersRoute,
   RecordingsRoute: RecordingsRoute,
@@ -776,6 +818,8 @@ const rootRouteChildren: RootRouteChildren = {
   TemplatesRoute: TemplatesRoute,
   UsageRoute: UsageRoute,
   WebhooksRoute: WebhooksRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   AgentsIdRoute: AgentsIdRoute,
   AgentsNewRoute: AgentsNewRoute,
   CallsIdRoute: CallsIdRoute,
