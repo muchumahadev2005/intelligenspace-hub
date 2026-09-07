@@ -55,7 +55,10 @@ export const navGroups: NavGroup[] = [
     label: "Platform",
     items: [
       { label: "Webhooks", to: "/webhooks", icon: Webhook },
-      { label: "Developer", to: "/developer", icon: Code2 },
+      { label: "Developer AI", to: "/developer", icon: Sparkles },
+      { label: "Projects", to: "/developer/projects", icon: FolderGit2 },
+      { label: "AI tasks", to: "/developer/tasks", icon: ListChecks },
+      { label: "API keys", to: "/api-keys", icon: Code2 },
       { label: "Usage & credits", to: "/usage", icon: CreditCard },
       { label: "Team", to: "/team", icon: Users },
       { label: "Settings", to: "/settings", icon: Settings },
