@@ -14,7 +14,7 @@ export default defineTool({
     const { files: _files, ...rest } = project;
     return {
       content: [{ type: "text", text: JSON.stringify(rest, null, 2) }],
-      structuredContent: { project: rest },
+      structuredContent: { project: JSON.parse(JSON.stringify(rest)) },
     };
   },
 });

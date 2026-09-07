@@ -20,7 +20,7 @@ export default defineTool({
     );
     return {
       content: [{ type: "text", text: JSON.stringify(rows, null, 2) }],
-      structuredContent: { findings: rows },
+      structuredContent: { findings: JSON.parse(JSON.stringify(rows)) },
     };
   },
 });
