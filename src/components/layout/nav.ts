@@ -13,6 +13,9 @@ import {
   CreditCard,
   Users,
   Settings,
+  Sparkles,
+  FolderGit2,
+  ListChecks,
   type LucideIcon,
 } from "lucide-react";
 
