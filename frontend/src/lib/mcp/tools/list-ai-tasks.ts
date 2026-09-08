@@ -1,6 +1,6 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
-import { aiTasks } from "@/mock/developer";
+import { devApi } from "@/services/developer-api";
 
 export default defineTool({
   name: "list_ai_tasks",
@@ -11,10 +11,9 @@ export default defineTool({
     status: z.string().optional().describe("Filter by task status, e.g. completed, running, failed."),
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
-  handler: ({ projectId, status }) => {
-    const rows = aiTasks.filter(
-      (t) => (!projectId || t.projectId === projectId) && (!status || t.status === status),
-    );
+  handler: async ({ projectId, status }) => {
+    const tasks = await devApi.tasks.list(projectId);
+    const rows = tasks.filter((t) => !status || t.status === status);
     return {
       content: [{ type: "text", text: JSON.stringify(rows, null, 2) }],
       structuredContent: { tasks: JSON.parse(JSON.stringify(rows)) },

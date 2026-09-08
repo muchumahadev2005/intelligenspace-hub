@@ -1,8 +1,14 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { Loader2, Sparkles } from "lucide-react";
 import { Panel } from "@/components/developer/ui";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useArchitecture } from "@/hooks/use-developer";
+import { useArchitecture, useProject } from "@/hooks/use-developer";
+import { devApi } from "@/services/developer-api";
 
 export const Route = createFileRoute("/developer/projects/$id/architecture")({
   head: () => ({
@@ -18,19 +24,66 @@ export const Route = createFileRoute("/developer/projects/$id/architecture")({
 
 function ArchitecturePage() {
   const { id } = Route.useParams();
+  const queryClient = useQueryClient();
+  const { data: project } = useProject(id);
   const { data: arch, isLoading } = useArchitecture(id);
+  const [running, setRunning] = useState(false);
 
   if (isLoading || !arch) return <Skeleton className="h-96 w-full" />;
 
-  const rows = Math.max(...arch.nodes.map((n) => n.row)) + 1;
+  const nodes = arch.nodes || [];
+  const rows = nodes.length ? Math.max(...nodes.map((n) => n.row || 0)) + 1 : 0;
+
+  const handleReanalyze = async () => {
+    setRunning(true);
+    const toastId = toast.loading("Synthesizing system architecture with AI...", {
+      description: "Evaluating microservice boundaries, schemas, and scaling trade-offs.",
+    });
+
+    try {
+      const prompt = arch.prompt || `Architecture analysis for ${project?.name || id}: full system diagram, microservices, and database model.`;
+      const updated = await devApi.architecture.run(id, prompt);
+      queryClient.setQueryData(["dev", "architecture", id], updated);
+      toast.success("Architecture analysis refreshed", {
+        id: toastId,
+        description: `Generated ${updated.nodes?.length || 0} nodes and ${updated.edges?.length || 0} connections.`,
+      });
+    } catch (err: any) {
+      console.error("Architecture analysis failed", err);
+      toast.error("Failed to analyze architecture", {
+        id: toastId,
+        description: err?.message || "Please check backend connection.",
+      });
+    } finally {
+      setRunning(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
-      <Panel title="System diagram" description={arch.prompt}>
+      <Panel
+        title="System diagram"
+        description={arch.prompt}
+        actions={
+          <Button size="sm" onClick={handleReanalyze} disabled={running} className="gap-1.5">
+            {running ? (
+              <>
+                <Loader2 className="size-3.5 animate-spin" />
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <Sparkles className="size-3.5" />
+                Analyze Architecture
+              </>
+            )}
+          </Button>
+        }
+      >
         <div className="space-y-4">
           {Array.from({ length: rows }, (_, row) => (
             <div key={row} className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {arch.nodes
+              {nodes
                 .filter((n) => n.row === row)
                 .sort((a, b) => a.col - b.col)
                 .map((n) => (
@@ -43,7 +96,7 @@ function ArchitecturePage() {
           ))}
         </div>
         <p className="mt-4 text-xs text-muted-foreground">
-          {arch.edges.length} connections between {arch.nodes.length} components.
+          {(arch.edges || []).length} connections between {nodes.length} components.
         </p>
       </Panel>
 

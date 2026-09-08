@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 import { AppShell } from "@/components/layout/app-shell";
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,8 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { api } from "@/services/api";
+import type { AgentType } from "@/types";
 
 export const Route = createFileRoute("/agents/new")({
   head: () => ({
@@ -42,13 +45,15 @@ const toolOptions = [
 
 function NewAgentPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [step, setStep] = useState(0);
+  const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({
     name: "",
     description: "",
     type: "voice",
     language: "en-IN",
-    model: "aurora-voice-1",
+    model: "openai/gpt-4o-mini",
     voice: "Meera",
     tone: "Warm and professional",
     greeting: "Hi, thanks for calling! How can I help you today?",
@@ -62,9 +67,31 @@ function NewAgentPage() {
 
   const canContinue = step !== 0 || form.name.trim().length > 1;
 
-  const submit = () => {
-    toast.success("Agent created", { description: `${form.name} is ready to take calls.` });
-    void navigate({ to: "/agents" });
+  const submit = async () => {
+    if (!form.name.trim() || saving) return;
+    setSaving(true);
+    try {
+      await api.agents.create({
+        name: form.name.trim(),
+        description: form.description.trim(),
+        type: form.type as AgentType,
+        status: "active",
+        language: form.language,
+        model: form.model || "openai/gpt-4o-mini",
+        voice: form.voice,
+        tone: form.tone,
+        greeting: form.greeting,
+        instructions: form.instructions,
+        tools: form.tools,
+      });
+      await queryClient.invalidateQueries({ queryKey: ["agents"] });
+      toast.success("Agent created", { description: `${form.name} is now active and ready.` });
+      void navigate({ to: "/agents" });
+    } catch (err: any) {
+      toast.error("Failed to create agent", { description: err.message || "An error occurred" });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -125,6 +152,7 @@ function NewAgentPage() {
                   <SelectContent>
                     <SelectItem value="voice">Voice</SelectItem>
                     <SelectItem value="chat">Chat</SelectItem>
+                    <SelectItem value="both">Both (Voice & Chat)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -145,9 +173,11 @@ function NewAgentPage() {
                 <Select value={form.model} onValueChange={(v) => set("model", v)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="aurora-voice-1">aurora-voice-1</SelectItem>
-                    <SelectItem value="aurora-voice-mini">aurora-voice-mini</SelectItem>
-                    <SelectItem value="aurora-chat-1">aurora-chat-1</SelectItem>
+                    <SelectItem value="openai/gpt-4o-mini">GPT-4o Mini (Recommended)</SelectItem>
+                    <SelectItem value="openai/gpt-4o">GPT-4o (Flagship)</SelectItem>
+                    <SelectItem value="anthropic/claude-3.5-haiku">Claude 3.5 Haiku</SelectItem>
+                    <SelectItem value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B</SelectItem>
+                    <SelectItem value="google/gemini-2.0-flash-001">Gemini 2.0 Flash</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -261,8 +291,8 @@ function NewAgentPage() {
               Continue <ArrowRight />
             </Button>
           ) : (
-            <Button onClick={submit}>
-              <Check /> Create agent
+            <Button onClick={submit} disabled={saving || !form.name.trim()}>
+              <Check /> {saving ? "Creating…" : "Create agent"}
             </Button>
           )}
         </div>

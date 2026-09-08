@@ -64,7 +64,8 @@ export function ScoreBar({ label, value }: { label: string; value: number }) {
   );
 }
 
-export function DiffView({ lines, className }: { lines: DiffLine[]; className?: string }) {
+export function DiffView({ lines = [], className }: { lines?: DiffLine[]; className?: string }) {
+  const safeLines = lines || [];
   return (
     <pre
       className={cn(
@@ -72,7 +73,7 @@ export function DiffView({ lines, className }: { lines: DiffLine[]; className?: 
         className,
       )}
     >
-      {lines.map((line, i) => (
+      {safeLines.map((line, i) => (
         <div
           key={i}
           className={cn(

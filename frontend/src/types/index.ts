@@ -1,4 +1,4 @@
-export type AgentType = "voice" | "chat";
+export type AgentType = "voice" | "chat" | "both";
 export type AgentStatus = "active" | "paused" | "draft";
 
 export interface Agent {
@@ -218,4 +218,11 @@ export interface SeriesPoint {
   minutes: number;
   agents: number;
   credits: number;
+}
+
+export interface UserSession {
+  name: string;
+  email: string;
+  role: string;
+  initials: string;
 }

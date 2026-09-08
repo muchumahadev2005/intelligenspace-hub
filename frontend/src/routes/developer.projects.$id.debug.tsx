@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Loader2, Sparkles } from "lucide-react";
 import { DiffView, Panel } from "@/components/developer/ui";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Progress } from "@/components/ui/progress";
 import { useDebugSession } from "@/hooks/use-developer";
+import { devApi } from "@/services/developer-api";
 import { relative } from "@/lib/format";
 
 export const Route = createFileRoute("/developer/projects/$id/debug")({
@@ -23,22 +26,40 @@ export const Route = createFileRoute("/developer/projects/$id/debug")({
 
 function DebugPage() {
   const { id } = Route.useParams();
+  const queryClient = useQueryClient();
   const { data: session, isLoading } = useDebugSession(id);
   const [input, setInput] = useState("");
   const [running, setRunning] = useState(false);
 
   if (isLoading || !session) return <Skeleton className="h-96 w-full" />;
 
-  const run = () => {
+  const run = async () => {
     if (!input.trim()) {
       toast.error("Paste an error message first");
       return;
     }
     setRunning(true);
-    setTimeout(() => {
+    const toastId = toast.loading("Analyzing runtime error with AI...", {
+      description: "Tracing stack trace and root causes.",
+    });
+
+    try {
+      const updated = await devApi.debug.run(id, input.trim());
+      queryClient.setQueryData(["dev", "debug", id], updated);
+      setInput("");
+      toast.success("AI Debug Analysis complete", {
+        id: toastId,
+        description: `Root cause identified with ${updated.confidence}% confidence.`,
+      });
+    } catch (err: any) {
+      console.error("Debug analysis failed", err);
+      toast.error("Failed to analyze error", {
+        id: toastId,
+        description: err?.message || "Please check backend connection.",
+      });
+    } finally {
       setRunning(false);
-      toast.success("Analysis complete", { description: "Root cause and patch updated." });
-    }, 1200);
+    }
   };
 
   return (
@@ -65,11 +86,18 @@ function DebugPage() {
           <h3 className="mt-5 text-xs font-semibold text-muted-foreground">Root cause</h3>
           <p className="mt-1 text-sm">{session.rootCause}</p>
           <div className="mt-4">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Confidence</span>
-              <span className="tabular-nums font-medium">{session.confidence}%</span>
-            </div>
-            <Progress value={session.confidence} className="mt-2 h-1.5" />
+            {(() => {
+              const conf = session.confidence <= 1 ? Math.round(session.confidence * 100) : Math.round(session.confidence);
+              return (
+                <>
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Confidence</span>
+                    <span className="tabular-nums font-medium">{conf}%</span>
+                  </div>
+                  <Progress value={conf} className="mt-2 h-1.5" />
+                </>
+              );
+            })()}
           </div>
         </Panel>
 

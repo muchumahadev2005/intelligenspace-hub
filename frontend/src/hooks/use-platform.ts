@@ -13,8 +13,8 @@ export const useCall = (id: string) =>
   useQuery({ queryKey: ["calls", id], queryFn: () => api.calls.get(id) });
 export const useRecordings = () =>
   useQuery({ queryKey: ["recordings"], queryFn: api.calls.recordings });
-export const useAppointments = () =>
-  useQuery({ queryKey: ["appointments"], queryFn: api.appointments.list });
+export const useAppointments = (status?: string) =>
+  useQuery({ queryKey: ["appointments", status ?? "all"], queryFn: () => api.appointments.list(status) });
 export const useCatalog = () => useQuery({ queryKey: ["catalog"], queryFn: api.catalog.list });
 export const useOrders = () => useQuery({ queryKey: ["orders"], queryFn: api.orders.list });
 export const useOrder = (id: string) =>
@@ -34,3 +34,5 @@ export const useActivity = () =>
   useQuery({ queryKey: ["activity"], queryFn: api.dashboard.activity });
 export const useSeries = (range: 7 | 30 | 90) =>
   useQuery({ queryKey: ["series", range], queryFn: () => api.dashboard.series(range) });
+export const useSession = () =>
+  useQuery({ queryKey: ["session"], queryFn: api.session.current });

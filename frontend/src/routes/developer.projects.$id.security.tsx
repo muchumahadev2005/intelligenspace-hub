@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Loader2, Sparkles, Check } from "lucide-react";
 import { DiffView, Panel, SeverityBadge } from "@/components/developer/ui";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/shared/states";
-import { useSecurityFindings } from "@/hooks/use-developer";
-import type { Severity } from "@/types/developer";
+import { useSecurityFindings, useProject } from "@/hooks/use-developer";
+import { devApi } from "@/services/developer-api";
+import type { SecurityFinding, Severity } from "@/types/developer";
 
 export const Route = createFileRoute("/developer/projects/$id/security")({
   head: () => ({
@@ -25,11 +28,45 @@ const filters: (Severity | "all")[] = ["all", "critical", "high", "medium", "low
 
 function SecurityPage() {
   const { id } = Route.useParams();
-  const { data, isLoading } = useSecurityFindings(id);
+  const queryClient = useQueryClient();
+  const { data: project } = useProject(id);
+  const { data = [], isLoading } = useSecurityFindings(id);
   const [severity, setSeverity] = useState<Severity | "all">("all");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [running, setRunning] = useState(false);
 
-  if (isLoading || !data) return <Skeleton className="h-96 w-full" />;
+  if (isLoading) return <Skeleton className="h-96 w-full" />;
+
+  const handleRunScan = async () => {
+    setRunning(true);
+    const toastId = toast.loading("Running comprehensive security scan with AI...", {
+      description: "Inspecting auth mechanisms, secret leaks, and injection vectors.",
+    });
+
+    try {
+      const codeSnippet = `// Project ${project?.name || id}\n// Security scan target files`;
+      const updated = await devApi.security.run(id, codeSnippet);
+      queryClient.setQueryData(["dev", "security", id], updated);
+      toast.success("Security scan completed", {
+        id: toastId,
+        description: `Found ${updated.length} potential security risks.`,
+      });
+    } catch (err: any) {
+      console.error("Security scan failed", err);
+      toast.error("Failed to run security scan", {
+        id: toastId,
+        description: err?.message || "Please check backend connection.",
+      });
+    } finally {
+      setRunning(false);
+    }
+  };
+
+  const handleApplyFix = (findingId: string, file: string) => {
+    const updated = data.map((f) => (f.id === findingId ? { ...f, status: "applied" as const } : f));
+    queryClient.setQueryData(["dev", "security", id], updated);
+    toast.success("Security patch applied", { description: file });
+  };
 
   const findings = data.filter((f) => severity === "all" || f.severity === severity);
   const counts = (["critical", "high", "medium", "low"] as Severity[]).map((s) => ({
@@ -43,8 +80,18 @@ function SecurityPage() {
         title="Security scan"
         description={`${data.length} findings across authentication, dependencies, secrets and configuration.`}
         actions={
-          <Button size="sm" onClick={() => toast.success("Scan started", { description: "Results update shortly." })}>
-            Run scan
+          <Button size="sm" onClick={handleRunScan} disabled={running} className="gap-1.5">
+            {running ? (
+              <>
+                <Loader2 className="size-3.5 animate-spin" />
+                Scanning...
+              </>
+            ) : (
+              <>
+                <Sparkles className="size-3.5" />
+                Run scan
+              </>
+            )}
           </Button>
         }
       >

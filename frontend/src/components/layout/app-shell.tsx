@@ -23,8 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { navGroups, mobileNav } from "./nav";
 import { CommandPalette } from "./command-palette";
-import { useNotifications, useWorkspaces } from "@/hooks/use-platform";
-import { currentUser } from "@/mock/data";
+import { useNotifications, useSession, useWorkspaces } from "@/hooks/use-platform";
 
 function Brand() {
   return (
@@ -109,6 +108,8 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
 
 function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
   const { data: notifications } = useNotifications();
+  const { data: session } = useSession();
+  const user = session || { name: "User", email: "", initials: "U" };
   const unread = notifications?.filter((n) => !n.read).length ?? 0;
 
   return (
@@ -165,15 +166,15 @@ function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
             <button aria-label="Account menu">
               <Avatar className="size-8">
                 <AvatarFallback className="bg-secondary text-xs">
-                  {currentUser.initials}
+                  {user.initials}
                 </AvatarFallback>
               </Avatar>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>
-              <div className="text-sm font-medium">{currentUser.name}</div>
-              <div className="text-xs font-normal text-muted-foreground">{currentUser.email}</div>
+              <div className="text-sm font-medium">{user.name}</div>
+              <div className="text-xs font-normal text-muted-foreground">{user.email}</div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>

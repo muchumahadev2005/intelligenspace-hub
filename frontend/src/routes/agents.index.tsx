@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Bot, Plus, Search } from "lucide-react";
+import { Bot, Copy, Plus, Search } from "lucide-react";
+import { toast } from "sonner";
 import { AppShell } from "@/components/layout/app-shell";
 import { PageHeader } from "@/components/shared/page-header";
 import { EmptyState, ErrorState, TableSkeleton } from "@/components/shared/states";
@@ -106,13 +107,28 @@ function AgentsPage() {
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold">{agent.name}</p>
                     <p className="text-xs capitalize text-muted-foreground">
-                      {agent.type} · {agent.model}
+                      {agent.type === "both" ? "Voice & Chat" : agent.type} · {agent.model}
                     </p>
                   </div>
                 </div>
                 <StatusBadge status={agent.status} />
               </div>
               <p className="line-clamp-2 text-sm text-muted-foreground">{agent.description}</p>
+              <div
+                className="flex items-center justify-between gap-2 rounded-md bg-muted/40 px-2.5 py-1 text-[11px] font-mono text-muted-foreground hover:bg-muted/70 transition-colors"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  navigator.clipboard.writeText(agent.id);
+                  toast.success("Agent ID copied!", { description: agent.id });
+                }}
+                title="Click to copy Agent ID"
+              >
+                <span className="truncate">ID: <code className="text-foreground">{agent.id.slice(0, 18)}…</code></span>
+                <span className="flex items-center gap-1 text-[10px] text-muted-foreground font-sans shrink-0 hover:text-foreground">
+                  <Copy className="size-3" /> Copy
+                </span>
+              </div>
               <div className="mt-auto grid grid-cols-3 gap-2 border-t border-border pt-3 text-xs">
                 <div>
                   <p className="text-muted-foreground">Calls</p>

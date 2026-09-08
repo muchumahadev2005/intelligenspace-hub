@@ -7,19 +7,13 @@ import { ErrorState, TableSkeleton } from "@/components/shared/states";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { calls } from "@/mock/data";
 import { useCall } from "@/hooks/use-platform";
 import { dateTime, duration, money } from "@/lib/format";
 
 export const Route = createFileRoute("/calls/$id")({
   head: ({ params }) => {
-    const call = calls.find((c) => c.id === params.id);
-    const title = call
-      ? `Call ${call.reference} · ${call.customer} — AI Platform`
-      : "Call detail — AI Platform";
-    const description = call
-      ? `${call.summary} ${call.direction} call handled by an AI agent.`
-      : "Full transcript, sentiment, outcome and cost breakdown for a single AI-handled call.";
+    const title = `Call Details · ${params.id} — AI Platform`;
+    const description = "Full transcript, sentiment, outcome and cost breakdown for a single AI-handled call.";
     const url = `https://intelligenspace-hub.lovable.app/calls/${params.id}`;
     return {
       meta: [

@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { currentUser } from "@/mock/data";
+import { useSession } from "@/hooks/use-platform";
 
 export const Route = createFileRoute("/settings")({
   head: () => ({
@@ -34,12 +34,20 @@ export const Route = createFileRoute("/settings")({
 });
 
 function SettingsPage() {
+  const { data: session } = useSession();
   const [workspace, setWorkspace] = useState("Acme Labs");
-  const [name, setName] = useState(currentUser.name);
-  const [email, setEmail] = useState(currentUser.email);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [region, setRegion] = useState("ap-south-1");
   const [prefs, setPrefs] = useState({ callAlerts: true, weekly: true, lowCredits: true, product: false });
   const [mfa, setMfa] = useState(true);
+
+  useEffect(() => {
+    if (session) {
+      if (session.name) setName((prev) => prev || session.name);
+      if (session.email) setEmail((prev) => prev || session.email);
+    }
+  }, [session]);
 
   const save = () => toast.success("Settings saved", { description: "Your preferences are up to date." });
 

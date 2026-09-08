@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Loader2, Sparkles } from "lucide-react";
 import { DiffView, Panel, TaskStatusPill } from "@/components/developer/ui";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCodingTask } from "@/hooks/use-developer";
+import { devApi } from "@/services/developer-api";
 
 export const Route = createFileRoute("/developer/projects/$id/coding")({
   head: () => ({
@@ -22,22 +25,40 @@ export const Route = createFileRoute("/developer/projects/$id/coding")({
 
 function CodingPage() {
   const { id } = Route.useParams();
+  const queryClient = useQueryClient();
   const { data: task, isLoading } = useCodingTask(id);
   const [prompt, setPrompt] = useState("");
   const [running, setRunning] = useState(false);
 
   if (isLoading || !task) return <Skeleton className="h-96 w-full" />;
 
-  const run = () => {
+  const run = async () => {
     if (!prompt.trim()) {
       toast.error("Describe what you want built");
       return;
     }
     setRunning(true);
-    setTimeout(() => {
+    const toastId = toast.loading("Coding agent is working...", {
+      description: "Planning implementation steps and generating code diffs.",
+    });
+
+    try {
+      const updated = await devApi.coding.run(id, prompt.trim());
+      queryClient.setQueryData(["dev", "coding", id], updated);
+      setPrompt("");
+      toast.success("Implementation ready", {
+        id: toastId,
+        description: `Generated ${updated.changes?.length || 0} file diffs and plan steps.`,
+      });
+    } catch (err: any) {
+      console.error("Coding task failed", err);
+      toast.error("Failed to run coding agent", {
+        id: toastId,
+        description: err?.message || "Please check backend connection.",
+      });
+    } finally {
       setRunning(false);
-      toast.success("Implementation ready", { description: "Review the diff before merging." });
-    }, 1400);
+    }
   };
 
   return (
