@@ -36,3 +36,9 @@ export const useSeries = (range: 7 | 30 | 90) =>
   useQuery({ queryKey: ["series", range], queryFn: () => api.dashboard.series(range) });
 export const useSession = () =>
   useQuery({ queryKey: ["session"], queryFn: api.session.current });
+export const useWebhookDeliveries = (webhookId: string | null) =>
+  useQuery({
+    queryKey: ["webhook-deliveries", webhookId],
+    queryFn: () => (webhookId ? api.webhooks.getDeliveries(webhookId) : Promise.resolve([])),
+    enabled: Boolean(webhookId),
+  });

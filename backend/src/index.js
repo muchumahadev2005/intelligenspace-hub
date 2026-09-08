@@ -1,8 +1,10 @@
 import { serve } from '@hono/node-server';
 import { createApp } from './app.js';
 import { env } from './config/env.js';
+import { startWebhookRetryWorker } from './services/webhook.service.js';
 
 const app = createApp();
+const retryWorker = startWebhookRetryWorker();
 
 const server = serve({
   fetch: app.fetch,
@@ -20,6 +22,7 @@ const server = serve({
 // Graceful shutdown
 const shutdown = () => {
   console.log('\n🛑 Gracefully shutting down server...');
+  retryWorker.stop();
   server.close(() => {
     console.log('Server shut down successfully.');
     process.exit(0);

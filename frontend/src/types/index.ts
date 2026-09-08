@@ -131,22 +131,63 @@ export interface Order {
 
 export interface WebhookEndpoint {
   id: string;
+  workspaceId?: string;
+  name: string;
   url: string;
-  description: string;
+  description?: string;
   status: "healthy" | "degraded" | "disabled";
   events: string[];
+  isActive: boolean;
   successRate: number;
+  lastDeliveryAt: string | null;
   createdAt: string;
-  deliveries: WebhookDelivery[];
+  updatedAt?: string;
+  secret?: string;
+  deliveries?: WebhookDelivery[];
 }
+
+export type Webhook = WebhookEndpoint;
 
 export interface WebhookDelivery {
   id: string;
-  event: string;
+  webhookId?: string;
+  eventId?: string;
+  eventType?: string;
+  event?: string;
+  status?: "pending" | "delivering" | "delivered" | "retrying" | "failed";
+  state?: "delivered" | "failed" | "retrying" | "pending";
+  attempt?: number;
+  httpStatus?: number | null;
+  statusCode?: number | null;
+  durationMs: number | null;
+  response?: string | null;
+  payload?: any;
+  createdAt: string;
+  at?: string;
+  deliveredAt?: string | null;
+  nextRetryAt?: string | null;
+}
+
+export interface CreateWebhookInput {
+  name: string;
+  url: string;
+  events: string[];
+}
+
+export interface UpdateWebhookInput {
+  name?: string;
+  url?: string;
+  events?: string[];
+  isActive?: boolean;
+}
+
+export interface TestWebhookResult {
+  deliveryId: string;
+  eventId: string;
+  success: boolean;
   statusCode: number;
-  state: "delivered" | "failed" | "retrying";
-  at: string;
   durationMs: number;
+  error: string | null;
 }
 
 export interface ApiKey {

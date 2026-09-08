@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
 import { query } from '../db/client.js';
+import * as eventService from '../services/event.service.js';
 
 export const appointmentRoutes = new Hono();
 appointmentRoutes.use('*', authMiddleware);
@@ -47,6 +48,22 @@ appointmentRoutes.post('/', async (c) => {
     ]
   );
   const row = result.rows[0];
+
+  eventService.emit('appointment.created', {
+    appointment: {
+      id: row.id,
+      customerName: row.customer,
+      customerPhone: row.phone,
+      customerEmail: row.email,
+      date: typeof row.date === 'string' ? row.date.slice(0, 10) : new Date(row.date).toISOString().slice(0, 10),
+      time: row.time ? row.time.slice(0, 5) : (d.time || '10:00'),
+      duration: Number(row.duration_minutes || 30),
+      status: row.status,
+      type: row.type,
+      agentName: row.agent_name,
+    },
+  }, workspaceId);
+
   return c.json(
     {
       ...row,
@@ -66,7 +83,21 @@ appointmentRoutes.patch('/:id', async (c) => {
     [d.status, d.notes, c.req.param('id'), workspaceId]
   );
   if (result.rows.length === 0) return c.json({ error: 'Not found' }, 404);
-  return c.json(result.rows[0]);
+
+  const updatedRow = result.rows[0];
+  const eventName = updatedRow.status === 'cancelled' ? 'appointment.cancelled' : 'appointment.updated';
+  eventService.emit(eventName, {
+    appointment: {
+      id: updatedRow.id,
+      customerName: updatedRow.customer,
+      customerPhone: updatedRow.phone,
+      customerEmail: updatedRow.email,
+      status: updatedRow.status,
+      notes: updatedRow.notes,
+    },
+  }, workspaceId);
+
+  return c.json(updatedRow);
 });
 
 appointmentRoutes.delete('/:id', async (c) => {

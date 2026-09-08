@@ -175,25 +175,34 @@ export const schema = `
   CREATE TABLE IF NOT EXISTS webhooks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     workspace_id UUID REFERENCES workspaces(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL DEFAULT 'Webhook Endpoint',
     url TEXT NOT NULL,
     description TEXT,
     status VARCHAR(50) DEFAULT 'healthy',
     events JSONB DEFAULT '[]',
     secret VARCHAR(255),
+    is_active BOOLEAN DEFAULT true,
+    last_delivery_at TIMESTAMPTZ,
     success_rate DECIMAL(5,2) DEFAULT 100,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
   );
 
   -- Webhook Deliveries
   CREATE TABLE IF NOT EXISTS webhook_deliveries (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     webhook_id UUID REFERENCES webhooks(id) ON DELETE CASCADE,
-    event VARCHAR(100),
-    status_code INTEGER,
-    state VARCHAR(50) DEFAULT 'delivered',
+    event_id VARCHAR(100),
+    event_type VARCHAR(100),
+    status VARCHAR(50) DEFAULT 'delivered',
+    attempt INTEGER DEFAULT 1,
+    http_status INTEGER,
+    response TEXT,
     payload JSONB,
     duration_ms INTEGER DEFAULT 0,
-    created_at TIMESTAMPTZ DEFAULT NOW()
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    delivered_at TIMESTAMPTZ,
+    next_retry_at TIMESTAMPTZ
   );
 
   -- API Keys
@@ -284,5 +293,21 @@ export const schema = `
     agent VARCHAR(100),
     created_at TIMESTAMPTZ DEFAULT NOW()
   );
+
+  -- Migration additions for webhooks
+  ALTER TABLE webhooks ADD COLUMN IF NOT EXISTS name VARCHAR(255) DEFAULT 'Webhook Endpoint';
+  ALTER TABLE webhooks ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;
+  ALTER TABLE webhooks ADD COLUMN IF NOT EXISTS last_delivery_at TIMESTAMPTZ;
+  ALTER TABLE webhooks ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+
+  -- Migration additions for webhook_deliveries
+  ALTER TABLE webhook_deliveries ADD COLUMN IF NOT EXISTS event_id VARCHAR(100);
+  ALTER TABLE webhook_deliveries ADD COLUMN IF NOT EXISTS event_type VARCHAR(100);
+  ALTER TABLE webhook_deliveries ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'delivered';
+  ALTER TABLE webhook_deliveries ADD COLUMN IF NOT EXISTS attempt INTEGER DEFAULT 1;
+  ALTER TABLE webhook_deliveries ADD COLUMN IF NOT EXISTS http_status INTEGER;
+  ALTER TABLE webhook_deliveries ADD COLUMN IF NOT EXISTS response TEXT;
+  ALTER TABLE webhook_deliveries ADD COLUMN IF NOT EXISTS delivered_at TIMESTAMPTZ;
+  ALTER TABLE webhook_deliveries ADD COLUMN IF NOT EXISTS next_retry_at TIMESTAMPTZ;
 
 `;

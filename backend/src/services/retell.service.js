@@ -2,6 +2,7 @@ import { env } from '../config/env.js';
 import { query } from '../db/client.js';
 import { buildAgentSystemPrompt } from './openrouter.service.js';
 import { generateRef } from '../utils/format.js';
+import * as eventService from './event.service.js';
 
 const RETELL_API_URL = 'https://api.retellai.com';
 
@@ -250,6 +251,25 @@ export async function handleRetellWebhook(event, data) {
         callId,
       ]
     );
+
+    const callDetails = await query(`SELECT * FROM calls WHERE retell_call_id=$1`, [callId]);
+    if (callDetails.rows.length > 0) {
+      const c = callDetails.rows[0];
+      eventService.emit('call.completed', {
+        call: {
+          id: c.id,
+          reference: c.reference,
+          agentId: c.agent_id,
+          agentName: c.agent_name,
+          customer: c.customer,
+          duration: Number(c.duration_seconds || 0),
+          status: c.status,
+          summary: c.summary,
+          sentiment: c.sentiment,
+          hasRecording: Boolean(c.has_recording),
+        },
+      }, c.workspace_id);
+    }
   } else {
     // If inbound phone call directly through Retell
     const workspaceId = data.metadata?.workspace_id;
@@ -258,7 +278,7 @@ export async function handleRetellWebhook(event, data) {
 
     if (workspaceId) {
       const reference = generateRef('CALL');
-      await query(
+      const ins = await query(
         `INSERT INTO calls (
           workspace_id, reference, customer, customer_number,
           agent_id, agent_name, direction, status, duration_seconds,
@@ -267,7 +287,7 @@ export async function handleRetellWebhook(event, data) {
         ) VALUES (
           $1, $2, $3, $4, $5, $6, $7, 'completed', $8,
           NOW(), $9, $10, $11, $12, $13, $14, $15, $16
-        )`,
+        ) RETURNING *`,
         [
           workspaceId,
           reference,
@@ -287,6 +307,22 @@ export async function handleRetellWebhook(event, data) {
           callId,
         ]
       );
+
+      const c = ins.rows[0];
+      eventService.emit('call.completed', {
+        call: {
+          id: c.id,
+          reference: c.reference,
+          agentId: c.agent_id,
+          agentName: c.agent_name,
+          customer: c.customer,
+          duration: Number(c.duration_seconds || 0),
+          status: c.status,
+          summary: c.summary,
+          sentiment: c.sentiment,
+          hasRecording: Boolean(c.has_recording),
+        },
+      }, workspaceId);
     }
   }
 

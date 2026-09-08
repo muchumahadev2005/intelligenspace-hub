@@ -20,6 +20,10 @@ import type {
   UsageRecord,
   UserSession,
   WebhookEndpoint,
+  WebhookDelivery,
+  CreateWebhookInput,
+  UpdateWebhookInput,
+  TestWebhookResult,
   Workspace,
 } from "@/types";
 
@@ -461,12 +465,17 @@ export const api = {
         if (Array.isArray(rows)) {
           return rows.map((w) => ({
             id: w.id,
+            workspaceId: w.workspaceId || w.workspace_id,
+            name: w.name || w.description || "Webhook Endpoint",
             url: w.url,
             description: w.description || "",
-            status: w.status || "healthy",
+            status: (w.status || "healthy") as WebhookEndpoint["status"],
             events: typeof w.events === "string" ? JSON.parse(w.events) : (w.events || []),
-            successRate: Number(w.success_rate || 100),
-            createdAt: w.created_at || new Date().toISOString(),
+            isActive: Boolean(w.isActive !== undefined ? w.isActive : (w.is_active !== undefined ? w.is_active : true)),
+            successRate: Number(w.successRate ?? w.success_rate ?? 100),
+            lastDeliveryAt: w.lastDeliveryAt || w.last_delivery_at || null,
+            createdAt: w.createdAt || w.created_at || new Date().toISOString(),
+            updatedAt: w.updatedAt || w.updated_at,
             deliveries: [],
           }));
         }
@@ -475,8 +484,103 @@ export const api = {
       }
       return [];
     },
-    test: async (id: string): Promise<any> => {
-      return await apiRequest(`/webhooks/${id}/test`, { method: "POST" });
+    getWebhooks: async (): Promise<WebhookEndpoint[]> => {
+      return api.webhooks.list();
+    },
+    createWebhook: async (data: CreateWebhookInput): Promise<WebhookEndpoint & { secret: string }> => {
+      const res = await apiRequest<any>("/webhooks", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      return {
+        id: res.id,
+        workspaceId: res.workspaceId || res.workspace_id,
+        name: res.name,
+        url: res.url,
+        description: res.description || "",
+        status: res.status || "healthy",
+        events: res.events || [],
+        isActive: Boolean(res.isActive !== undefined ? res.isActive : res.is_active),
+        successRate: Number(res.successRate ?? res.success_rate ?? 100),
+        lastDeliveryAt: res.lastDeliveryAt || res.last_delivery_at || null,
+        createdAt: res.createdAt || res.created_at || new Date().toISOString(),
+        secret: res.secret,
+      };
+    },
+    updateWebhook: async (id: string, data: UpdateWebhookInput): Promise<WebhookEndpoint> => {
+      const res = await apiRequest<any>(`/webhooks/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      });
+      return {
+        id: res.id,
+        name: res.name,
+        url: res.url,
+        description: res.description || "",
+        status: res.status || "healthy",
+        events: res.events || [],
+        isActive: Boolean(res.isActive !== undefined ? res.isActive : res.is_active),
+        successRate: Number(res.successRate ?? res.success_rate ?? 100),
+        lastDeliveryAt: res.lastDeliveryAt || res.last_delivery_at || null,
+        createdAt: res.createdAt || res.created_at,
+      };
+    },
+    deleteWebhook: async (id: string): Promise<{ deleted: boolean }> => {
+      return await apiRequest(`/webhooks/${id}`, { method: "DELETE" });
+    },
+    testWebhook: async (id: string): Promise<TestWebhookResult> => {
+      return await apiRequest<TestWebhookResult>(`/webhooks/${id}/test`, { method: "POST" });
+    },
+    getDeliveries: async (webhookId: string, limit = 50): Promise<WebhookDelivery[]> => {
+      try {
+        const rows = await apiRequest<any[]>(`/webhooks/${webhookId}/deliveries?limit=${limit}`);
+        if (Array.isArray(rows)) {
+          return rows.map((d) => ({
+            id: d.id,
+            webhookId: d.webhookId || d.webhook_id,
+            eventId: d.eventId || d.event_id || d.id,
+            eventType: d.eventType || d.event_type || d.event || "custom",
+            event: d.eventType || d.event_type || d.event || "custom",
+            status: d.status || d.state || "delivered",
+            state: d.status || d.state || "delivered",
+            attempt: Number(d.attempt || 1),
+            httpStatus: d.httpStatus !== undefined && d.httpStatus !== null ? Number(d.httpStatus) : (d.status_code !== undefined ? Number(d.status_code) : null),
+            statusCode: d.httpStatus !== undefined && d.httpStatus !== null ? Number(d.httpStatus) : (d.status_code !== undefined ? Number(d.status_code) : 0),
+            durationMs: d.durationMs !== undefined && d.durationMs !== null ? Number(d.durationMs) : (d.duration_ms !== undefined ? Number(d.duration_ms) : null),
+            response: d.response || null,
+            payload: d.payload || null,
+            createdAt: d.createdAt || d.created_at || new Date().toISOString(),
+            at: d.createdAt || d.created_at || new Date().toISOString(),
+            deliveredAt: d.deliveredAt || d.delivered_at || null,
+            nextRetryAt: d.nextRetryAt || d.next_retry_at || null,
+          }));
+        }
+      } catch (err) {
+        console.error("[API] Failed to fetch deliveries:", err);
+      }
+      return [];
+    },
+    getDeliveryDetails: async (webhookId: string, deliveryId: string): Promise<WebhookDelivery> => {
+      const d = await apiRequest<any>(`/webhooks/${webhookId}/deliveries/${deliveryId}`);
+      return {
+        id: d.id,
+        webhookId: d.webhookId || d.webhook_id,
+        eventId: d.eventId || d.event_id || d.id,
+        eventType: d.eventType || d.event_type || d.event || "custom",
+        event: d.eventType || d.event_type || d.event || "custom",
+        status: d.status || d.state || "delivered",
+        state: d.status || d.state || "delivered",
+        attempt: Number(d.attempt || 1),
+        httpStatus: d.httpStatus !== undefined && d.httpStatus !== null ? Number(d.httpStatus) : (d.status_code !== undefined ? Number(d.status_code) : null),
+        statusCode: d.httpStatus !== undefined && d.httpStatus !== null ? Number(d.httpStatus) : (d.status_code !== undefined ? Number(d.status_code) : 0),
+        durationMs: d.durationMs !== undefined && d.durationMs !== null ? Number(d.durationMs) : (d.duration_ms !== undefined ? Number(d.duration_ms) : null),
+        response: d.response || null,
+        payload: d.payload || null,
+        createdAt: d.createdAt || d.created_at || new Date().toISOString(),
+        at: d.createdAt || d.created_at || new Date().toISOString(),
+        deliveredAt: d.deliveredAt || d.delivered_at || null,
+        nextRetryAt: d.nextRetryAt || d.next_retry_at || null,
+      };
     },
   },
 

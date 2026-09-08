@@ -1,5 +1,6 @@
 import { query } from '../db/client.js';
 import { generateRef } from '../utils/format.js';
+import * as eventService from './event.service.js';
 
 export async function listOrders(workspaceId, { status, search, page = 1, limit = 50 } = {}) {
   let sql = `SELECT * FROM orders WHERE workspace_id=$1`;
@@ -36,7 +37,21 @@ export async function createOrder(workspaceId, data) {
      VALUES ($1,$2,$3,$4,$5,$6,'pending',$7,$8,$9,$10) RETURNING *`,
     [workspaceId, reference, customer, phone, JSON.stringify(items), total, agent_id, agent_name, channel || 'api', JSON.stringify(timeline)]
   );
-  return result.rows[0];
+  const order = result.rows[0];
+
+  eventService.emit('order.created', {
+    order: {
+      id: order.id,
+      reference: order.reference,
+      customerName: order.customer,
+      customerPhone: order.phone,
+      items: typeof order.items === 'string' ? JSON.parse(order.items) : (order.items || []),
+      total: Number(order.total || 0),
+      status: order.status,
+    },
+  }, workspaceId);
+
+  return order;
 }
 
 export async function updateOrderStatus(id, workspaceId, status) {
@@ -46,5 +61,18 @@ export async function updateOrderStatus(id, workspaceId, status) {
     `UPDATE orders SET status=$1, timeline=$2, updated_at=NOW() WHERE id=$3 AND workspace_id=$4 RETURNING *`,
     [status, JSON.stringify(timeline), id, workspaceId]
   );
-  return result.rows[0];
+  const updatedOrder = result.rows[0];
+
+  eventService.emit('order.updated', {
+    order: {
+      id: updatedOrder.id,
+      reference: updatedOrder.reference,
+      customerName: updatedOrder.customer,
+      customerPhone: updatedOrder.phone,
+      status: updatedOrder.status,
+      total: Number(updatedOrder.total || 0),
+    },
+  }, workspaceId);
+
+  return updatedOrder;
 }

@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth.js';
 import * as callService from '../services/call.service.js';
 import * as agentService from '../services/agent.service.js';
+import * as eventService from '../services/event.service.js';
 import { createWebCall, createPhoneCall } from '../services/retell.service.js';
 import { query } from '../db/client.js';
 import { generateRef } from '../utils/format.js';
@@ -91,7 +92,24 @@ callRoutes.post('/log', async (c) => {
       ]
     );
 
-    return c.json({ success: true, call: res.rows[0] });
+    const callRow = res.rows[0];
+
+    eventService.emit('call.completed', {
+      call: {
+        id: callRow.id,
+        reference: callRow.reference,
+        agentId: callRow.agent_id,
+        agentName: callRow.agent_name,
+        customer: callRow.customer,
+        duration: Number(callRow.duration_seconds || 0),
+        status: callRow.status,
+        summary: callRow.summary,
+        sentiment: callRow.sentiment,
+        hasRecording: Boolean(callRow.has_recording),
+      },
+    }, workspaceId);
+
+    return c.json({ success: true, call: callRow });
   } catch (err) {
     console.error('[Log Call Error]', err.message);
     return c.json({ error: 'Failed to log call' }, 500);
