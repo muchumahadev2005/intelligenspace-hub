@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { navGroups, mobileNav } from "./nav";
 import { CommandPalette } from "./command-palette";
 import { useNotifications, useSession, useWorkspaces } from "@/hooks/use-platform";
+import { clearStoredAuth, getStoredToken } from "@/lib/api-client";
 
 function Brand() {
   return (
@@ -187,8 +188,14 @@ function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
               <Link to={"/usage" as "/"}>Usage & credits</Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link to={"/login" as "/"}>Sign out</Link>
+            <DropdownMenuItem
+              className="cursor-pointer text-destructive focus:text-destructive"
+              onClick={() => {
+                clearStoredAuth();
+                window.location.href = "/auth";
+              }}
+            >
+              Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -223,6 +230,14 @@ function BottomNav() {
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [paletteOpen, setPaletteOpen] = useState(false);
+
+  // Authentication guard: redirect to /auth if no session token exists
+  useEffect(() => {
+    const token = getStoredToken();
+    if (!token && typeof window !== "undefined" && !window.location.pathname.startsWith("/auth")) {
+      window.location.href = "/auth";
+    }
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

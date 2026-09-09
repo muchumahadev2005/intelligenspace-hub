@@ -35,27 +35,28 @@ export function getStoredUser(): any | null {
 }
 
 /**
- * Ensures an auth token exists, logging in with demo credentials if none is present.
+ * Retrieves the stored auth token, or empty string if none exists.
  */
 export async function ensureToken(): Promise<string> {
-  const existing = getStoredToken();
-  if (existing) return existing;
+  return getStoredToken() || '';
+}
 
-  try {
-    const res = await fetch(`${API_BASE}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'demo@intelligenspace.io', password: 'demo1234' }),
-    });
-    if (res.ok) {
-      const data = await res.json();
-      setStoredAuth(data.token, data.user);
-      return data.token;
-    }
-  } catch (err) {
-    console.warn('[API] Could not auto-authenticate with demo credentials:', err);
+/**
+ * Explicit one-click sign-in using demo administrator credentials.
+ */
+export async function loginWithDemoCredentials(): Promise<{ token: string; user: any }> {
+  const res = await fetch(`${API_BASE}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'demo@intelligenspace.io', password: 'demo1234' }),
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({ error: 'Failed to sign in with demo credentials' }));
+    throw new Error(errData.error || 'Demo login failed');
   }
-  return '';
+  const data = await res.json();
+  setStoredAuth(data.token, data.user);
+  return data;
 }
 
 /**
@@ -77,6 +78,13 @@ export async function apiRequest<T>(
 
   const url = `${API_BASE}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
   const response = await fetch(url, { ...options, headers });
+
+  if (response.status === 401) {
+    if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/auth')) {
+      clearStoredAuth();
+      window.location.href = '/auth';
+    }
+  }
 
   if (!response.ok) {
     let errorMsg = `API Error ${response.status}: ${response.statusText}`;

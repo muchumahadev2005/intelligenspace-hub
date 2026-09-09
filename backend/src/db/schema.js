@@ -322,6 +322,11 @@ export const schema = `
     updated_at TIMESTAMPTZ DEFAULT NOW()
   );
 
+  -- Users OAuth migration additions
+  ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL;
+  ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id VARCHAR(255);
+  ALTER TABLE users ADD COLUMN IF NOT EXISTS auth_provider VARCHAR(50) DEFAULT 'local';
+
   INSERT INTO system_ai_models (id, name, description, speed, badge, is_default, is_enabled, is_custom)
   VALUES 
     ('openrouter/free', 'Free Auto Router', 'Smart load-balanced router across active models ($0/M tokens)', 'Fast', 'Free', true, true, false),

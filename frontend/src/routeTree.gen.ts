@@ -29,6 +29,7 @@ import { Route as AdminModelsRouteImport } from './routes/admin.models'
 import { Route as AgentsIndexRouteImport } from './routes/agents.index'
 import { Route as AgentsIdRouteImport } from './routes/agents.$id'
 import { Route as AgentsNewRouteImport } from './routes/agents.new'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as CallsIndexRouteImport } from './routes/calls.index'
 import { Route as CallsIdRouteImport } from './routes/calls.$id'
 import { Route as DeveloperIndexRouteImport } from './routes/developer.index'
@@ -150,6 +151,11 @@ const AgentsNewRoute = AgentsNewRouteImport.update({
   path: '/agents/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => AuthRoute,
+} as any)
 const CallsIndexRoute = CallsIndexRouteImport.update({
   id: '/calls/',
   path: '/calls/',
@@ -260,7 +266,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api-keys': typeof ApiKeysRoute
   '/appointments': typeof AppointmentsRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/catalog': typeof CatalogRoute
   '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
@@ -276,6 +282,7 @@ export interface FileRoutesByFullPath {
   '/admin/models': typeof AdminModelsRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/calls/$id': typeof CallsIdRoute
   '/developer/tasks': typeof DeveloperTasksRoute
   '/orders/$id': typeof OrdersIdRoute
@@ -301,7 +308,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api-keys': typeof ApiKeysRoute
   '/appointments': typeof AppointmentsRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/catalog': typeof CatalogRoute
   '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
@@ -317,6 +324,7 @@ export interface FileRoutesByTo {
   '/admin/models': typeof AdminModelsRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/calls/$id': typeof CallsIdRoute
   '/developer/tasks': typeof DeveloperTasksRoute
   '/orders/$id': typeof OrdersIdRoute
@@ -342,7 +350,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/api-keys': typeof ApiKeysRoute
   '/appointments': typeof AppointmentsRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/catalog': typeof CatalogRoute
   '/mcp': typeof McpRoute
   '/onboarding': typeof OnboardingRoute
@@ -358,6 +366,7 @@ export interface FileRoutesById {
   '/admin/models': typeof AdminModelsRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/calls/$id': typeof CallsIdRoute
   '/developer/tasks': typeof DeveloperTasksRoute
   '/orders/$id': typeof OrdersIdRoute
@@ -401,6 +410,7 @@ export interface FileRouteTypes {
     | '/admin/models'
     | '/agents/$id'
     | '/agents/new'
+    | '/auth/callback'
     | '/calls/$id'
     | '/developer/tasks'
     | '/orders/$id'
@@ -442,6 +452,7 @@ export interface FileRouteTypes {
     | '/admin/models'
     | '/agents/$id'
     | '/agents/new'
+    | '/auth/callback'
     | '/calls/$id'
     | '/developer/tasks'
     | '/orders/$id'
@@ -482,6 +493,7 @@ export interface FileRouteTypes {
     | '/admin/models'
     | '/agents/$id'
     | '/agents/new'
+    | '/auth/callback'
     | '/calls/$id'
     | '/developer/tasks'
     | '/orders/$id'
@@ -508,7 +520,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiKeysRoute: typeof ApiKeysRoute
   AppointmentsRoute: typeof AppointmentsRoute
-  AuthRoute: typeof AuthRoute
+  AuthRoute: typeof AuthRouteWithChildren
   CatalogRoute: typeof CatalogRoute
   McpRoute: typeof McpRoute
   OnboardingRoute: typeof OnboardingRoute
@@ -678,6 +690,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgentsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/calls/': {
       id: '/calls/'
       path: '/calls'
@@ -814,6 +833,16 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthRouteChildren {
+  AuthCallbackRoute: typeof AuthCallbackRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthCallbackRoute: AuthCallbackRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 interface DeveloperProjectsIdRouteChildren {
   DeveloperProjectsIdActivityRoute: typeof DeveloperProjectsIdActivityRoute
   DeveloperProjectsIdArchitectureRoute: typeof DeveloperProjectsIdArchitectureRoute
@@ -847,7 +876,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiKeysRoute: ApiKeysRoute,
   AppointmentsRoute: AppointmentsRoute,
-  AuthRoute: AuthRoute,
+  AuthRoute: AuthRouteWithChildren,
   CatalogRoute: CatalogRoute,
   McpRoute: McpRoute,
   OnboardingRoute: OnboardingRoute,

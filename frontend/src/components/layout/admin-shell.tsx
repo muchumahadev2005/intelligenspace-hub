@@ -32,6 +32,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useSession } from "@/hooks/use-platform";
 import { cn } from "@/lib/utils";
+import { clearStoredAuth, getStoredToken } from "@/lib/api-client";
 
 export interface AdminNavItem {
   label: string;
@@ -83,6 +84,14 @@ export function AdminShell({ children, activeSection = "models", onSectionChange
   };
 
   const isAuthorized = activeRole === "admin";
+
+  // Authentication guard: redirect to /auth if no session exists
+  useEffect(() => {
+    const token = getStoredToken();
+    if (!token && typeof window !== "undefined" && !window.location.pathname.startsWith("/auth")) {
+      window.location.href = "/auth";
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -244,6 +253,18 @@ export function AdminShell({ children, activeSection = "models", onSectionChange
                 {session?.email || "admin@intelligenspace.io"}
               </p>
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
+              title="Sign Out"
+              onClick={() => {
+                clearStoredAuth();
+                window.location.href = "/auth";
+              }}
+            >
+              <LogOut className="size-3.5" />
+            </Button>
           </div>
 
           {/* Live RBAC Simulator Widget */}
@@ -360,6 +381,18 @@ export function AdminShell({ children, activeSection = "models", onSectionChange
               <Link to="/">
                 <ArrowLeft className="size-3" /> Back to App
               </Link>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 text-xs gap-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+              onClick={() => {
+                clearStoredAuth();
+                window.location.href = "/auth";
+              }}
+            >
+              <LogOut className="size-3" /> Sign Out
             </Button>
           </div>
         </header>
