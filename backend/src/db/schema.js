@@ -332,7 +332,11 @@ export const schema = `
     ('nex-agi/nex-n2.5-pro:free', 'Nex-N2.5 Pro', 'Autonomous verified outcomes coding agent ($0/M tokens)', 'Deep reasoning', 'Free', false, true, false),
     ('nvidia/nemotron-3-ultra-550b-a55b:free', 'Nemotron 3 Ultra', 'Frontier reasoning & orchestration 55B active params ($0/M tokens)', 'Deep reasoning', 'Free', false, true, false),
     ('google/gemma-4-26b-a4b-it:free', 'Gemma 4 26B MoE', 'High-efficiency mixture-of-experts ($0/M tokens)', 'Ultra fast', 'Free', false, true, false),
-    ('liquid/lfm-2.5-2.6b:free', 'LiquidAI LFM 2.6B', 'Compact rapid reasoning model for data extraction ($0/M tokens)', 'Ultra fast', 'Free', false, true, false)
+    ('liquid/lfm-2.5-2.6b:free', 'LiquidAI LFM 2.6B', 'Compact rapid reasoning model for data extraction ($0/M tokens)', 'Ultra fast', 'Free', false, true, false),
+    ('google/gemini-2.5-flash', 'Gemini 2.5 Flash', 'Google next-gen multimodal reasoning with ultra-low latency & 1M context', 'Ultra fast', 'Pro', false, true, false),
+    ('openai/gpt-4o-mini', 'GPT-4o Mini', 'OpenAI high-speed intelligence for coding, analysis & agent workflows', 'Fast', 'Pro', false, true, false),
+    ('anthropic/claude-3-haiku', 'Claude 3 Haiku', 'Anthropic rapid, compact intelligence for instant responses & tool execution', 'Ultra fast', 'Pro', false, true, false),
+    ('openai/gpt-4o', 'GPT-4o Omnimodal', 'OpenAI flagship frontier model for deep reasoning, complex code & architecture', 'Deep reasoning', 'Frontier', false, true, false)
   ON CONFLICT (id) DO NOTHING;
 
 `;

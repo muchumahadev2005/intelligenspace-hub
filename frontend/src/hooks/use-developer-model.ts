@@ -77,6 +77,34 @@ export const DEVELOPER_AI_MODELS: DeveloperAIModel[] = [
     badge: "100% Free",
     speed: "Ultra fast",
   },
+  {
+    id: "google/gemini-2.5-flash",
+    name: "Gemini 2.5 Flash",
+    description: "Google next-gen multimodal reasoning with ultra-low latency & 1M context",
+    badge: "Pro",
+    speed: "Ultra fast",
+  },
+  {
+    id: "openai/gpt-4o-mini",
+    name: "GPT-4o Mini",
+    description: "OpenAI high-speed intelligence for coding, analysis & agent workflows",
+    badge: "Pro",
+    speed: "Fast",
+  },
+  {
+    id: "anthropic/claude-3-haiku",
+    name: "Claude 3 Haiku",
+    description: "Anthropic rapid, compact intelligence for instant responses & tool execution",
+    badge: "Pro",
+    speed: "Ultra fast",
+  },
+  {
+    id: "openai/gpt-4o",
+    name: "GPT-4o Omnimodal",
+    description: "OpenAI flagship frontier model for deep reasoning, complex code & architecture",
+    badge: "Frontier",
+    speed: "Deep reasoning",
+  },
 ];
 
 const STORAGE_KEY = "developer_ai_selected_model";
