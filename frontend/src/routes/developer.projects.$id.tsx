@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useProject } from "@/hooks/use-developer";
 
+import { ModelQuotaBar } from "@/components/developer/model-quota-bar";
+
 export const Route = createFileRoute("/developer/projects/$id")({
   head: () => ({
     meta: [
@@ -70,6 +72,9 @@ function ProjectWorkspace() {
           }
         />
       )}
+      <div className="mt-4">
+        <ModelQuotaBar />
+      </div>
       <WorkspaceTabs id={id} />
       <div className="mt-6">
         <Outlet />

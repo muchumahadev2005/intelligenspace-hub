@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { Save } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Save, Cpu, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/layout/app-shell";
 import { PageHeader } from "@/components/shared/page-header";
@@ -70,6 +70,7 @@ function SettingsPage() {
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
+          <TabsTrigger value="models">AI Models</TabsTrigger>
         </TabsList>
 
         <TabsContent value="workspace" className="mt-6">
@@ -148,6 +149,29 @@ function SettingsPage() {
             >
               Sign out other sessions
             </Button>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="models" className="mt-6">
+          <div className="panel max-w-xl space-y-4 p-6">
+            <div className="flex items-start gap-4">
+              <div className="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <Cpu className="size-5" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-sm font-semibold text-foreground">AI Models Administration</h3>
+                <p className="text-xs text-muted-foreground">
+                  Configure platform routing, enable or disable models, test real-time latency, and set the system default model.
+                </p>
+              </div>
+            </div>
+            <div className="pt-2">
+              <Button asChild className="gap-1.5 text-xs">
+                <Link to="/admin/models">
+                  Open AI Models Console <ArrowRight className="size-3.5" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </TabsContent>
       </Tabs>

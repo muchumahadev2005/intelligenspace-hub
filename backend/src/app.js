@@ -27,6 +27,7 @@ import { usageRoutes } from './routes/usage.js';
 import { teamRoutes } from './routes/team.js';
 import { notificationRoutes } from './routes/notifications.js';
 import { developerRoutes } from './routes/developer/index.js';
+import { adminModelsRoutes } from './routes/admin/models.js';
 
 export function createApp() {
   const app = new Hono();
@@ -163,6 +164,7 @@ export function createApp() {
   app.route('/api/v1/team', teamRoutes);
   app.route('/api/v1/notifications', notificationRoutes);
   app.route('/api/v1/developer', developerRoutes);
+  app.route('/api/v1/admin/models', adminModelsRoutes);
 
   // ── 404 ───────────────────────────────────────────────────────────
   app.notFound((c) => c.json({ error: 'Route not found' }, 404));

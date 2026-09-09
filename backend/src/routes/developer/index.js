@@ -10,10 +10,18 @@ import {
   testRoutes,
   securityRoutes,
   documentationRoutes,
+  checkDeveloperLimit,
 } from './ai-agents.js';
 
 export const developerRoutes = new Hono();
 developerRoutes.use('*', authMiddleware);
+
+// GET /api/v1/developer/limits — usage quota for Developer AI
+developerRoutes.get('/limits', async (c) => {
+  const { workspaceId } = c.get('user');
+  const limits = await checkDeveloperLimit(workspaceId);
+  return c.json(limits);
+});
 
 // Mount sub-routes
 developerRoutes.route('/projects', projectRoutes);

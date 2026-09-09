@@ -25,6 +25,7 @@ import { Route as TemplatesRouteImport } from './routes/templates'
 import { Route as UsageRouteImport } from './routes/usage'
 import { Route as WebhooksRouteImport } from './routes/webhooks'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AdminModelsRouteImport } from './routes/admin.models'
 import { Route as AgentsIndexRouteImport } from './routes/agents.index'
 import { Route as AgentsIdRouteImport } from './routes/agents.$id'
 import { Route as AgentsNewRouteImport } from './routes/agents.new'
@@ -129,6 +130,11 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
     path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AdminModelsRoute = AdminModelsRouteImport.update({
+  id: '/admin/models',
+  path: '/admin/models',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AgentsIndexRoute = AgentsIndexRouteImport.update({
   id: '/agents/',
   path: '/agents/',
@@ -267,6 +273,7 @@ export interface FileRoutesByFullPath {
   '/usage': typeof UsageRoute
   '/webhooks': typeof WebhooksRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/models': typeof AdminModelsRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
   '/calls/$id': typeof CallsIdRoute
@@ -307,6 +314,7 @@ export interface FileRoutesByTo {
   '/usage': typeof UsageRoute
   '/webhooks': typeof WebhooksRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/models': typeof AdminModelsRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
   '/calls/$id': typeof CallsIdRoute
@@ -347,6 +355,7 @@ export interface FileRoutesById {
   '/usage': typeof UsageRoute
   '/webhooks': typeof WebhooksRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/admin/models': typeof AdminModelsRoute
   '/agents/$id': typeof AgentsIdRoute
   '/agents/new': typeof AgentsNewRoute
   '/calls/$id': typeof CallsIdRoute
@@ -389,6 +398,7 @@ export interface FileRouteTypes {
     | '/usage'
     | '/webhooks'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/models'
     | '/agents/$id'
     | '/agents/new'
     | '/calls/$id'
@@ -429,6 +439,7 @@ export interface FileRouteTypes {
     | '/usage'
     | '/webhooks'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/models'
     | '/agents/$id'
     | '/agents/new'
     | '/calls/$id'
@@ -468,6 +479,7 @@ export interface FileRouteTypes {
     | '/usage'
     | '/webhooks'
     | '/.well-known/oauth-protected-resource'
+    | '/admin/models'
     | '/agents/$id'
     | '/agents/new'
     | '/calls/$id'
@@ -509,6 +521,7 @@ export interface RootRouteChildren {
   UsageRoute: typeof UsageRoute
   WebhooksRoute: typeof WebhooksRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  AdminModelsRoute: typeof AdminModelsRoute
   AgentsIdRoute: typeof AgentsIdRoute
   AgentsNewRoute: typeof AgentsNewRoute
   CallsIdRoute: typeof CallsIdRoute
@@ -635,6 +648,13 @@ declare module '@tanstack/react-router' {
       path: '/.well-known/oauth-protected-resource'
       fullPath: '/.well-known/oauth-protected-resource'
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/models': {
+      id: '/admin/models'
+      path: '/admin/models'
+      fullPath: '/admin/models'
+      preLoaderRoute: typeof AdminModelsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agents/': {
@@ -841,6 +861,7 @@ const rootRouteChildren: RootRouteChildren = {
   WebhooksRoute: WebhooksRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  AdminModelsRoute: AdminModelsRoute,
   AgentsIdRoute: AgentsIdRoute,
   AgentsNewRoute: AgentsNewRoute,
   CallsIdRoute: CallsIdRoute,

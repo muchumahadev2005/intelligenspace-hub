@@ -16,6 +16,7 @@ import {
   Sparkles,
   FolderGit2,
   ListChecks,
+  Cpu,
   type LucideIcon,
 } from "lucide-react";
 

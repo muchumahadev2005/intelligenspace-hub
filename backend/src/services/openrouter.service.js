@@ -19,24 +19,24 @@ const client = new OpenAI({
  * @param {Array}  [options.tools] - OpenAI function/tool definitions
  * @returns {object} { reply, usage, toolCalls }
  */
-export async function chatCompletion({ model, systemPrompt, messages, tools }) {
+export async function chatCompletion({ model, systemPrompt, messages, tools, maxTokens }) {
   const msgs = [
     { role: 'system', content: systemPrompt },
     ...(messages || []),
   ];
 
-  // OpenRouter models must be in "provider/model" format (e.g. openai/gpt-4o-mini).
+  // OpenRouter models must be in "provider/model" format (e.g. openrouter/free).
   // If the passed model is invalid or a dummy voice name (e.g. aurora-voice-mini), fallback to env.OPENROUTER_DEFAULT_MODEL.
   let selectedModel = model;
   if (!selectedModel || !selectedModel.includes('/')) {
-    selectedModel = env.OPENROUTER_DEFAULT_MODEL || 'openai/gpt-4o-mini';
+    selectedModel = env.OPENROUTER_DEFAULT_MODEL || 'openrouter/free';
   }
 
   const params = {
     model: selectedModel,
     messages: msgs,
     temperature: 0.7,
-    max_tokens: 1024,
+    max_tokens: maxTokens || 3072,
   };
 
   if (tools && tools.length > 0) {
@@ -44,18 +44,33 @@ export async function chatCompletion({ model, systemPrompt, messages, tools }) {
     params.tool_choice = 'auto';
   }
 
+  const freeModels = [
+    selectedModel,
+    env.OPENROUTER_DEFAULT_MODEL || 'openrouter/free',
+    'google/gemma-4-31b-it:free',
+    'nvidia/nemotron-3.5-lightning:free',
+    'liquid/lfm-2.5-2.6b:free',
+  ].filter((m, i, arr) => m && arr.indexOf(m) === i);
+
   let response;
-  try {
-    response = await client.chat.completions.create(params);
-  } catch (err) {
-    // If the model failed (e.g. invalid model ID), retry with default model
-    if (selectedModel !== (env.OPENROUTER_DEFAULT_MODEL || 'openai/gpt-4o-mini')) {
-      console.warn(`[OpenRouter] Model ${selectedModel} failed (${err.message}). Retrying with default model...`);
-      params.model = env.OPENROUTER_DEFAULT_MODEL || 'openai/gpt-4o-mini';
+  let lastErr;
+
+  for (const candidate of freeModels) {
+    try {
+      params.model = candidate;
       response = await client.chat.completions.create(params);
-    } else {
-      throw err;
+      if (candidate !== selectedModel) {
+        console.log(`[OpenRouter] Successfully completed using free fallback model: ${candidate}`);
+      }
+      break;
+    } catch (err) {
+      lastErr = err;
+      console.warn(`[OpenRouter] Model ${candidate} failed (${err.message}). Trying next free model...`);
     }
+  }
+
+  if (!response) {
+    throw lastErr || new Error('All free OpenRouter models failed to respond.');
   }
 
   const choice = response.choices[0];

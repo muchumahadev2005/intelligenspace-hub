@@ -53,7 +53,7 @@ function NewAgentPage() {
     description: "",
     type: "voice",
     language: "en-IN",
-    model: "openai/gpt-4o-mini",
+    model: "openrouter/free",
     voice: "Meera",
     tone: "Warm and professional",
     greeting: "Hi, thanks for calling! How can I help you today?",
@@ -169,15 +169,17 @@ function NewAgentPage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Model</Label>
+                <Label>AI Model</Label>
                 <Select value={form.model} onValueChange={(v) => set("model", v)}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="openai/gpt-4o-mini">GPT-4o Mini (Recommended)</SelectItem>
-                    <SelectItem value="openai/gpt-4o">GPT-4o (Flagship)</SelectItem>
-                    <SelectItem value="anthropic/claude-3.5-haiku">Claude 3.5 Haiku</SelectItem>
-                    <SelectItem value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B</SelectItem>
-                    <SelectItem value="google/gemini-2.0-flash-001">Gemini 2.0 Flash</SelectItem>
+                    <SelectItem value="openrouter/free">Free Auto Router</SelectItem>
+                    <SelectItem value="google/gemma-4-31b-it:free">Gemma 4 31B Instruct</SelectItem>
+                    <SelectItem value="nvidia/nemotron-3.5-lightning:free">Nemotron 3.5 Lightning</SelectItem>
+                    <SelectItem value="cohere/north-mini-code:free">North Mini Code</SelectItem>
+                    <SelectItem value="poolside/laguna-s-2.1:free">Laguna S 2.1</SelectItem>
+                    <SelectItem value="nex-agi/nex-n2.5-pro:free">Nex-N2.5 Pro</SelectItem>
+                    <SelectItem value="liquid/lfm-2.5-2.6b:free">LiquidAI LFM 2.6B</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

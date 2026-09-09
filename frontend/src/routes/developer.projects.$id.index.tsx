@@ -3,6 +3,7 @@ import { AlertTriangle, FileCode2, ShieldCheck, TestTube2 } from "lucide-react";
 import { ActivityTimeline, Panel, ScoreBar, TaskStatusPill } from "@/components/developer/ui";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAITasks, useDevActivity, useProject } from "@/hooks/use-developer";
 import { relative } from "@/lib/format";
 
@@ -76,22 +77,30 @@ function Overview() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Panel title="Recent agent runs">
-          <ul className="divide-y divide-border">
-            {tasks?.length ? (
-              tasks.slice(0, 6).map((t) => (
-                <li key={t.id} className="flex items-center gap-3 py-3 text-sm">
-                  <span className="min-w-0 flex-1 truncate">{t.title}</span>
-                  <Badge variant="secondary">{t.agent}</Badge>
-                  <TaskStatusPill status={t.status} />
-                </li>
-              ))
-            ) : (
-              <li className="py-3 text-sm text-muted-foreground">No agent runs yet.</li>
-            )}
-          </ul>
+          {tasks?.length ? (
+            <ScrollArea className="h-[320px] pr-4">
+              <ul className="divide-y divide-border">
+                {tasks.map((t) => (
+                  <li key={t.id} className="flex items-center gap-3 py-3 text-sm">
+                    <span className="min-w-0 flex-1 truncate">{t.title}</span>
+                    <Badge variant="secondary">{t.agent}</Badge>
+                    <TaskStatusPill status={t.status} />
+                  </li>
+                ))}
+              </ul>
+            </ScrollArea>
+          ) : (
+            <p className="py-3 text-sm text-muted-foreground">No agent runs yet.</p>
+          )}
         </Panel>
         <Panel title="Activity">
-          <ActivityTimeline items={activity ?? []} />
+          {activity?.length ? (
+            <ScrollArea className="h-[320px] pr-4 pl-3 pt-2">
+              <ActivityTimeline items={activity} />
+            </ScrollArea>
+          ) : (
+            <p className="py-3 text-sm text-muted-foreground">No activity recorded yet.</p>
+          )}
         </Panel>
       </div>
     </div>

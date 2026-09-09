@@ -46,7 +46,7 @@ export const schema = `
     description TEXT,
     type VARCHAR(50) DEFAULT 'voice',
     status VARCHAR(50) DEFAULT 'draft',
-    model VARCHAR(255) DEFAULT 'openai/gpt-4o-mini',
+    model VARCHAR(255) DEFAULT 'openrouter/free',
     voice VARCHAR(255),
     language VARCHAR(50) DEFAULT 'en',
     instructions TEXT,
@@ -308,6 +308,31 @@ export const schema = `
   ALTER TABLE webhook_deliveries ADD COLUMN IF NOT EXISTS http_status INTEGER;
   ALTER TABLE webhook_deliveries ADD COLUMN IF NOT EXISTS response TEXT;
   ALTER TABLE webhook_deliveries ADD COLUMN IF NOT EXISTS delivered_at TIMESTAMPTZ;
-  ALTER TABLE webhook_deliveries ADD COLUMN IF NOT EXISTS next_retry_at TIMESTAMPTZ;
+  -- System AI Models (Admin Managed)
+  CREATE TABLE IF NOT EXISTS system_ai_models (
+    id VARCHAR(255) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    speed VARCHAR(50) DEFAULT 'Fast',
+    badge VARCHAR(50) DEFAULT 'Free',
+    is_default BOOLEAN DEFAULT false,
+    is_enabled BOOLEAN DEFAULT true,
+    is_custom BOOLEAN DEFAULT false,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  INSERT INTO system_ai_models (id, name, description, speed, badge, is_default, is_enabled, is_custom)
+  VALUES 
+    ('openrouter/free', 'Free Auto Router', 'Smart load-balanced router across active models ($0/M tokens)', 'Fast', 'Free', true, true, false),
+    ('google/gemma-4-31b-it:free', 'Gemma 4 31B Instruct', '30.7B multimodal instruction model ($0/M tokens)', 'Balanced', 'Free', false, true, false),
+    ('nvidia/nemotron-3.5-lightning:free', 'Nemotron 3.5 Lightning', 'Ultra-fast mixture-of-experts with 1M context ($0/M tokens)', 'Ultra fast', 'Free', false, true, false),
+    ('cohere/north-mini-code:free', 'North Mini Code', 'Dedicated agentic coding model for code analysis ($0/M tokens)', 'Fast', 'Free', false, true, false),
+    ('poolside/laguna-s-2.1:free', 'Laguna S 2.1', 'Specialized software engineering agent ($0/M tokens)', 'Balanced', 'Free', false, true, false),
+    ('nex-agi/nex-n2.5-pro:free', 'Nex-N2.5 Pro', 'Autonomous verified outcomes coding agent ($0/M tokens)', 'Deep reasoning', 'Free', false, true, false),
+    ('nvidia/nemotron-3-ultra-550b-a55b:free', 'Nemotron 3 Ultra', 'Frontier reasoning & orchestration 55B active params ($0/M tokens)', 'Deep reasoning', 'Free', false, true, false),
+    ('google/gemma-4-26b-a4b-it:free', 'Gemma 4 26B MoE', 'High-efficiency mixture-of-experts ($0/M tokens)', 'Ultra fast', 'Free', false, true, false),
+    ('liquid/lfm-2.5-2.6b:free', 'LiquidAI LFM 2.6B', 'Compact rapid reasoning model for data extraction ($0/M tokens)', 'Ultra fast', 'Free', false, true, false)
+  ON CONFLICT (id) DO NOTHING;
 
 `;

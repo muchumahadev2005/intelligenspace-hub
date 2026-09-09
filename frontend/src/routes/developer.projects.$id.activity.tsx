@@ -3,6 +3,7 @@ import { ActivityTimeline, Panel, TaskStatusPill } from "@/components/developer/
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/shared/states";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAITasks, useDevActivity } from "@/hooks/use-developer";
 import { relative } from "@/lib/format";
 
@@ -27,24 +28,38 @@ function ActivityPage() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <Panel title="Timeline">
+      <Panel
+        title="Timeline"
+        description={activity?.length ? `${activity.length} event${activity.length === 1 ? "" : "s"} recorded` : undefined}
+      >
         {activity?.length ? (
-          <ActivityTimeline items={activity} />
+          <ScrollArea className="h-[560px] pr-4 pl-3 pt-2">
+            <ActivityTimeline items={activity} />
+          </ScrollArea>
         ) : (
           <EmptyState title="No activity yet" description="Run an agent to see history here." />
         )}
       </Panel>
-      <Panel title="Agent runs">
-        <ul className="divide-y divide-border">
-          {tasks?.map((t) => (
-            <li key={t.id} className="flex flex-wrap items-center gap-3 py-3 text-sm">
-              <span className="min-w-0 flex-1 truncate">{t.title}</span>
-              <Badge variant="secondary">{t.agent}</Badge>
-              <TaskStatusPill status={t.status} />
-              <span className="text-xs text-muted-foreground">{relative(t.createdAt)}</span>
-            </li>
-          ))}
-        </ul>
+      <Panel
+        title="Agent runs"
+        description={tasks?.length ? `${tasks.length} total run${tasks.length === 1 ? "" : "s"}` : undefined}
+      >
+        {tasks?.length ? (
+          <ScrollArea className="h-[560px] pr-4">
+            <ul className="divide-y divide-border">
+              {tasks.map((t) => (
+                <li key={t.id} className="flex flex-wrap items-center gap-3 py-3 text-sm">
+                  <span className="min-w-0 flex-1 truncate">{t.title}</span>
+                  <Badge variant="secondary">{t.agent}</Badge>
+                  <TaskStatusPill status={t.status} />
+                  <span className="text-xs text-muted-foreground">{relative(t.createdAt)}</span>
+                </li>
+              ))}
+            </ul>
+          </ScrollArea>
+        ) : (
+          <EmptyState title="No agent runs yet" description="Execute code reviews, tests, or coding tasks to see them here." />
+        )}
       </Panel>
     </div>
   );

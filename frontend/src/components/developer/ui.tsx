@@ -93,9 +93,9 @@ export function DiffView({ lines = [], className }: { lines?: DiffLine[]; classN
   );
 }
 
-export function CodeBlock({ code }: { code: string }) {
+export function CodeBlock({ code, className }: { code: string; className?: string }) {
   return (
-    <pre className="overflow-x-auto rounded-lg border border-border bg-muted/40 p-4 font-mono text-xs leading-6">
+    <pre className={cn("overflow-auto rounded-lg border border-border bg-muted/40 p-4 font-mono text-xs leading-6", className)}>
       {code}
     </pre>
   );
@@ -200,16 +200,16 @@ export function Panel({
   children,
   className,
 }: {
-  title?: string;
-  description?: string;
-  actions?: ReactNode;
+  title?: string | undefined;
+  description?: string | undefined;
+  actions?: ReactNode | undefined;
   children: ReactNode;
-  className?: string;
+  className?: string | undefined;
 }) {
   return (
     <section className={cn("panel p-6", className)}>
       {title ? (
-        <header className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <header className="mb-4 flex flex-wrap items-start justify-between gap-3 shrink-0">
           <div>
             <h2 className="text-sm font-semibold">{title}</h2>
             {description ? (

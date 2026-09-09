@@ -1,5 +1,6 @@
 import { query } from '../db/client.js';
 import * as eventService from './event.service.js';
+import { env } from '../config/env.js';
 
 export async function listAgents(workspaceId, { status, type, search, page = 1, limit = 50 } = {}) {
   let sql = `SELECT * FROM agents WHERE workspace_id = $1`;
@@ -32,7 +33,7 @@ export async function createAgent(workspaceId, data) {
     `INSERT INTO agents (workspace_id, name, description, type, status, model, voice, language, instructions, greeting, tone, personality, tools)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
      RETURNING *`,
-    [workspaceId, name, description, type || 'voice', status || 'active', model || 'openai/gpt-4o-mini',
+    [workspaceId, name, description, type || 'voice', status || 'active', model || env.OPENROUTER_DEFAULT_MODEL || 'openrouter/free',
      voice, language || 'en', instructions, greeting, tone, personality, JSON.stringify(tools || [])]
   );
   const agent = result.rows[0];

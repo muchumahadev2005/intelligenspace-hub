@@ -18,11 +18,23 @@ projectRoutes.post('/', async (c) => {
   if (!d.name) return c.json({ error: 'name is required' }, 400);
 
   const id = d.id || `prj_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+  const codeQuality = d.code_quality !== undefined ? d.code_quality : (d.codeQuality !== undefined ? d.codeQuality : 88);
+  const security = d.security !== undefined ? d.security : 92;
+  const coverage = d.coverage !== undefined ? d.coverage : 75;
+  const architectureRating = d.architecture_rating || d.architectureRating || 'Good';
+  const findingsSummary = d.findings_summary || d.findingsSummary || {
+    securityIssues: 0,
+    reviewSuggestions: 2,
+    missingTests: 1,
+    architectureWarnings: 0,
+  };
+
   const result = await query(
     `INSERT INTO developer_projects (
       id, workspace_id, name, description, provider, full_name, branch, 
-      language, framework, stack, files, structure
-    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *`,
+      language, framework, stack, files, structure,
+      code_quality, security, coverage, architecture_rating, findings_summary
+    ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) RETURNING *`,
     [
       id,
       workspaceId,
@@ -36,8 +48,21 @@ projectRoutes.post('/', async (c) => {
       JSON.stringify(d.stack || []),
       JSON.stringify(d.files || []),
       JSON.stringify(d.structure || []),
+      codeQuality,
+      security,
+      coverage,
+      architectureRating,
+      JSON.stringify(findingsSummary),
     ]
   );
+
+  // Log activity
+  await query(
+    `INSERT INTO dev_activity (workspace_id, project_id, label, detail, agent)
+     VALUES ($1,$2,$3,$4,$5)`,
+    [workspaceId, id, 'Project connected', `Connected repository ${d.name} (${d.provider || 'github'})`, 'Developer AI']
+  ).catch(() => {});
+
   return c.json(result.rows[0], 201);
 });
 

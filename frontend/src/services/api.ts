@@ -34,7 +34,7 @@ function mapAgent(a: any): Agent {
     description: a.description || "",
     type: a.type || "voice",
     status: a.status || "active",
-    model: a.model || "openai/gpt-4o-mini",
+    model: a.model || "openrouter/free",
     voice: a.voice,
     language: a.language || "en",
     calls: Number(a.calls_count ?? a.calls ?? 0),

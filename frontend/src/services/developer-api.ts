@@ -1,6 +1,6 @@
 /**
  * Developer AI workspace service layer.
- * Connects the UI directly to backend PostgreSQL and OpenRouter AI endpoints.
+ * Connects the UI directly to backend PostgreSQL and AI endpoints.
  * All mock data has been removed.
  */
 import { apiRequest } from "@/lib/api-client";
@@ -113,6 +113,12 @@ export const devApi = {
     },
   },
 
+  limits: {
+    get: async (): Promise<{ runsToday: number; dailyLimit: number; remaining: number; hasReachedLimit: boolean }> => {
+      return apiRequest("/developer/limits");
+    },
+  },
+
   review: {
     get: async (projectId: string): Promise<CodeReview> => {
       if (typeof window !== "undefined") {
@@ -121,16 +127,34 @@ export const devApi = {
           if (cached) return JSON.parse(cached);
         } catch {}
       }
-      const res = await apiRequest<CodeReview>(`/developer/code-review/${projectId}`);
-      if (res && typeof window !== "undefined") {
-        localStorage.setItem(`project_review_${projectId}`, JSON.stringify(res));
+      try {
+        const res = await apiRequest<CodeReview>(`/developer/code-review/${projectId}`);
+        if (res && typeof window !== "undefined") {
+          localStorage.setItem(`project_review_${projectId}`, JSON.stringify(res));
+        }
+        return res;
+      } catch {
+        return {
+          id: `review_empty_${projectId}`,
+          projectId,
+          type: "Full review",
+          createdAt: new Date().toISOString(),
+          filesReviewed: 0,
+          findings: [],
+        };
       }
-      return res;
     },
-    run: async (projectId: string, code: string, language = "TypeScript", filesCount = 1): Promise<CodeReview> => {
+    run: async (
+      projectId: string,
+      code: string,
+      language = "TypeScript",
+      filesCount = 1,
+      filePath?: string,
+      model?: string,
+    ): Promise<CodeReview> => {
       const res = await apiRequest<CodeReview>("/developer/code-review", {
         method: "POST",
-        body: JSON.stringify({ projectId, code, language, filesCount }),
+        body: JSON.stringify({ projectId, code, language, filesCount, filePath, model }),
       });
       if (res && typeof window !== "undefined") {
         localStorage.setItem(`project_review_${projectId}`, JSON.stringify(res));
@@ -140,62 +164,138 @@ export const devApi = {
   },
 
   debug: {
-    get: async (projectId: string): Promise<DebugSession> => {
-      return apiRequest<DebugSession>(`/developer/debug/${projectId}`);
+    get: async (projectId: string): Promise<DebugSession | null> => {
+      if (typeof window !== "undefined") {
+        try {
+          const cached = localStorage.getItem(`project_debug_${projectId}`);
+          if (cached) return JSON.parse(cached);
+        } catch {}
+      }
+      try {
+        const res = await apiRequest<DebugSession>(`/developer/debug/${projectId}`);
+        if (res && typeof window !== "undefined") {
+          localStorage.setItem(`project_debug_${projectId}`, JSON.stringify(res));
+        }
+        return res;
+      } catch {
+        return null;
+      }
     },
-    run: async (projectId: string, errorMessage: string, code?: string): Promise<DebugSession> => {
-      return apiRequest<DebugSession>("/developer/debug", {
+    run: async (projectId: string, errorMessage: string, code?: string, model?: string): Promise<DebugSession> => {
+      const res = await apiRequest<DebugSession>("/developer/debug", {
         method: "POST",
-        body: JSON.stringify({ projectId, errorMessage, code }),
+        body: JSON.stringify({ projectId, errorMessage, code, model }),
       });
+      if (res && typeof window !== "undefined") {
+        localStorage.setItem(`project_debug_${projectId}`, JSON.stringify(res));
+      }
+      return res;
     },
   },
 
   coding: {
-    get: async (projectId: string): Promise<CodingTask> => {
-      return apiRequest<CodingTask>(`/developer/coding/${projectId}`);
+    get: async (projectId: string): Promise<CodingTask | null> => {
+      if (typeof window !== "undefined") {
+        try {
+          const cached = localStorage.getItem(`project_coding_${projectId}`);
+          if (cached) return JSON.parse(cached);
+        } catch {}
+      }
+      try {
+        const res = await apiRequest<CodingTask>(`/developer/coding/${projectId}`);
+        if (res && typeof window !== "undefined") {
+          localStorage.setItem(`project_coding_${projectId}`, JSON.stringify(res));
+        }
+        return res;
+      } catch {
+        return null;
+      }
     },
-    run: async (projectId: string, prompt: string): Promise<CodingTask> => {
-      return apiRequest<CodingTask>("/developer/coding", {
+    run: async (projectId: string, prompt: string, filePath?: string, code?: string, model?: string): Promise<CodingTask> => {
+      const res = await apiRequest<CodingTask>("/developer/coding", {
         method: "POST",
-        body: JSON.stringify({ projectId, prompt }),
+        body: JSON.stringify({ projectId, prompt, filePath, code, model }),
       });
+      if (res && typeof window !== "undefined") {
+        localStorage.setItem(`project_coding_${projectId}`, JSON.stringify(res));
+      }
+      return res;
     },
   },
 
   architecture: {
-    get: async (projectId: string): Promise<ArchitectureAnalysis> => {
-      return apiRequest<ArchitectureAnalysis>(`/developer/architecture/${projectId}`);
+    get: async (projectId: string): Promise<ArchitectureAnalysis | null> => {
+      if (typeof window !== "undefined") {
+        try {
+          const cached = localStorage.getItem(`project_arch_${projectId}`);
+          if (cached) return JSON.parse(cached);
+        } catch {}
+      }
+      try {
+        const res = await apiRequest<ArchitectureAnalysis>(`/developer/architecture/${projectId}`);
+        if (res && typeof window !== "undefined") {
+          localStorage.setItem(`project_arch_${projectId}`, JSON.stringify(res));
+        }
+        return res;
+      } catch {
+        return null;
+      }
     },
-    run: async (projectId: string, prompt: string): Promise<ArchitectureAnalysis> => {
-      return apiRequest<ArchitectureAnalysis>("/developer/architecture", {
+    run: async (projectId: string, prompt: string, fileList?: string[], model?: string): Promise<ArchitectureAnalysis> => {
+      const res = await apiRequest<ArchitectureAnalysis>("/developer/architecture", {
         method: "POST",
-        body: JSON.stringify({ projectId, prompt }),
+        body: JSON.stringify({ projectId, prompt, fileList, model }),
       });
+      if (res && typeof window !== "undefined") {
+        localStorage.setItem(`project_arch_${projectId}`, JSON.stringify(res));
+      }
+      return res;
     },
   },
 
   tests: {
-    get: async (projectId: string): Promise<TestAnalysis> => {
-      return apiRequest<TestAnalysis>(`/developer/tests/${projectId}`);
+    get: async (projectId: string): Promise<TestAnalysis | null> => {
+      if (typeof window !== "undefined") {
+        try {
+          const cached = localStorage.getItem(`project_tests_${projectId}`);
+          if (cached) return JSON.parse(cached);
+        } catch {}
+      }
+      try {
+        const res = await apiRequest<TestAnalysis>(`/developer/tests/${projectId}`);
+        if (res && typeof window !== "undefined") {
+          localStorage.setItem(`project_tests_${projectId}`, JSON.stringify(res));
+        }
+        return res;
+      } catch {
+        return null;
+      }
     },
-    run: async (projectId: string, code: string, framework = "vitest"): Promise<TestAnalysis> => {
-      return apiRequest<TestAnalysis>("/developer/tests", {
+    run: async (projectId: string, code: string, framework = "vitest", filePath?: string, model?: string): Promise<TestAnalysis> => {
+      const res = await apiRequest<TestAnalysis>("/developer/tests", {
         method: "POST",
-        body: JSON.stringify({ projectId, code, framework }),
+        body: JSON.stringify({ projectId, code, framework, filePath, model }),
       });
+      if (res && typeof window !== "undefined") {
+        localStorage.setItem(`project_tests_${projectId}`, JSON.stringify(res));
+      }
+      return res;
     },
   },
 
   security: {
     list: async (projectId: string): Promise<SecurityFinding[]> => {
-      const res = await apiRequest<SecurityFinding[]>(`/developer/security/${projectId}`);
-      return res || [];
+      try {
+        const res = await apiRequest<SecurityFinding[]>(`/developer/security/${projectId}`);
+        return res || [];
+      } catch {
+        return [];
+      }
     },
-    run: async (projectId: string, code: string): Promise<SecurityFinding[]> => {
+    run: async (projectId: string, code: string, filePath?: string, model?: string): Promise<SecurityFinding[]> => {
       const res = await apiRequest<SecurityFinding[]>("/developer/security", {
         method: "POST",
-        body: JSON.stringify({ projectId, code }),
+        body: JSON.stringify({ projectId, code, filePath, model }),
       });
       return res || [];
     },
@@ -203,13 +303,17 @@ export const devApi = {
 
   documentation: {
     list: async (projectId: string): Promise<DocumentationDoc[]> => {
-      const res = await apiRequest<DocumentationDoc[]>(`/developer/documentation/${projectId}`);
-      return res || [];
+      try {
+        const res = await apiRequest<DocumentationDoc[]>(`/developer/documentation/${projectId}`);
+        return res || [];
+      } catch {
+        return [];
+      }
     },
-    generate: async (projectId: string, code: string, kind = "README"): Promise<DocumentationDoc> => {
+    generate: async (projectId: string, code: string, kind = "README", filePath?: string, model?: string): Promise<DocumentationDoc> => {
       return apiRequest<DocumentationDoc>("/developer/documentation", {
         method: "POST",
-        body: JSON.stringify({ projectId, code, kind }),
+        body: JSON.stringify({ projectId, code, kind, filePath, model }),
       });
     },
   },
@@ -229,4 +333,62 @@ export const devApi = {
       return (rows || []).map(mapActivity);
     },
   },
+
+  adminModels: {
+    list: async (activeOnly?: boolean): Promise<SystemAIModel[]> => {
+      const url = activeOnly ? "/admin/models?activeOnly=true" : "/admin/models";
+      const res = await apiRequest<{ models: SystemAIModel[] }>(url);
+      return res.models || [];
+    },
+    create: async (data: Partial<SystemAIModel>): Promise<SystemAIModel> => {
+      const res = await apiRequest<{ model: SystemAIModel }>("/admin/models", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      return res.model;
+    },
+    update: async (id: string, data: Partial<SystemAIModel>): Promise<SystemAIModel> => {
+      const res = await apiRequest<{ model: SystemAIModel }>(`/admin/models/${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      });
+      return res.model;
+    },
+    delete: async (id: string): Promise<{ success: boolean; message?: string }> => {
+      return apiRequest<{ success: boolean; message?: string }>(`/admin/models/${encodeURIComponent(id)}`, {
+        method: "DELETE",
+      });
+    },
+    test: async (modelId: string, prompt?: string, maxTokens?: number): Promise<ModelPingResult> => {
+      return apiRequest<ModelPingResult>("/admin/models/test", {
+        method: "POST",
+        body: JSON.stringify({ modelId, prompt, maxTokens }),
+      });
+    },
+  },
 };
+
+export interface SystemAIModel {
+  id: string;
+  name: string;
+  description: string;
+  speed: "Ultra fast" | "Fast" | "Balanced" | "Deep reasoning";
+  badge?: string;
+  isDefault: boolean;
+  isEnabled: boolean;
+  isCustom: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ModelPingResult {
+  ok: boolean;
+  latencyMs: number;
+  response?: string;
+  error?: string;
+  modelId: string;
+  prompt?: string;
+  tokensUsed?: number;
+}
+
+

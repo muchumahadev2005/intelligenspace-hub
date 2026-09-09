@@ -16,9 +16,9 @@ export interface ProjectFile {
   name: string;
   path: string;
   type: "file" | "folder";
-  language?: string;
-  children?: ProjectFile[];
-  content?: string;
+  language?: string | undefined;
+  children?: ProjectFile[] | undefined;
+  content?: string | undefined;
 }
 
 export interface Project {
@@ -85,6 +85,7 @@ export interface CodingTask {
   id: string;
   projectId: string;
   prompt: string;
+  filePath?: string;
   createdAt: string;
   steps: { id: string; label: string; status: TaskStatus }[];
   plan: { id: string; label: string; done: boolean }[];
@@ -121,6 +122,7 @@ export interface TestAnalysis {
   projectId: string;
   framework: string;
   coverage: number;
+  filePath?: string;
   missing: { area: string; count: number }[];
   suggested: { id: string; name: string; area: string }[];
   generatedDiff: DiffLine[];
@@ -145,6 +147,7 @@ export interface SecurityFinding {
   impact: string;
   recommendation: string;
   diff: DiffLine[];
+  status?: "open" | "applied" | "ignored";
 }
 
 export interface DocumentationDoc {
@@ -157,6 +160,7 @@ export interface DocumentationDoc {
     | "Setup guide"
     | "Developer guide"
     | "Deployment guide";
+  filePath?: string;
   updatedAt: string;
   content: string;
 }

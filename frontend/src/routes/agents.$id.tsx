@@ -120,7 +120,7 @@ function AgentLiveChat({ agent }: { agent: Agent }) {
       toast.error("Chat error", { description: err.message || "Failed to reach agent" });
       setMessages([
         ...newHistory,
-        { role: "assistant", content: "I am having trouble connecting to OpenRouter right now. Please check your backend connection." },
+        { role: "assistant", content: "I am having trouble connecting to the AI service right now. Please check your backend connection." },
       ]);
     } finally {
       setLoading(false);
@@ -151,7 +151,7 @@ function AgentLiveChat({ agent }: { agent: Agent }) {
             <RotateCcw className="size-3" /> Clear chat
           </Button>
           <Badge variant="outline" className="text-xs gap-1">
-            <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live OpenRouter
+            <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" /> Live AI Engine
           </Badge>
         </div>
       </div>
@@ -805,15 +805,17 @@ function AgentDetail() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Model</Label>
+                <Label>AI Model</Label>
                 <Select value={model} onValueChange={setModel}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="openai/gpt-4o-mini">GPT-4o Mini (Recommended)</SelectItem>
-                    <SelectItem value="openai/gpt-4o">GPT-4o (Flagship)</SelectItem>
-                    <SelectItem value="anthropic/claude-3.5-haiku">Claude 3.5 Haiku</SelectItem>
-                    <SelectItem value="meta-llama/llama-3.3-70b-instruct">Llama 3.3 70B</SelectItem>
-                    <SelectItem value="google/gemini-2.0-flash-001">Gemini 2.0 Flash</SelectItem>
+                    <SelectItem value="openrouter/free">Free Auto Router</SelectItem>
+                    <SelectItem value="google/gemma-4-31b-it:free">Gemma 4 31B Instruct</SelectItem>
+                    <SelectItem value="nvidia/nemotron-3.5-lightning:free">Nemotron 3.5 Lightning</SelectItem>
+                    <SelectItem value="cohere/north-mini-code:free">North Mini Code</SelectItem>
+                    <SelectItem value="poolside/laguna-s-2.1:free">Laguna S 2.1</SelectItem>
+                    <SelectItem value="nex-agi/nex-n2.5-pro:free">Nex-N2.5 Pro</SelectItem>
+                    <SelectItem value="liquid/lfm-2.5-2.6b:free">LiquidAI LFM 2.6B</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
