@@ -96,6 +96,8 @@ function formatRoutingTag(id: string): string {
     .replace(/^poolside\//i, "")
     .replace(/^nex-agi\//i, "")
     .replace(/^liquid\//i, "")
+    .replace(/^openai\//i, "")
+    .replace(/^anthropic\//i, "")
     .replace(/:free$/i, "");
 
   if (clean === "free" || id.toLowerCase().includes("openrouter/free")) {
