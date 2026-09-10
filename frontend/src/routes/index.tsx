@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Area,
   AreaChart,
@@ -42,20 +42,45 @@ export const Route = createFileRoute("/")({
 });
 
 function IndexRoute() {
-  const [token] = useState(() => getStoredToken());
+  const [token, setToken] = useState(() => getStoredToken());
   const [viewOverride, setViewOverride] = useState<"landing" | "dashboard" | null>(() => {
     if (typeof window === "undefined") return null;
     const v = new URLSearchParams(window.location.search).get("view");
     return v === "landing" ? "landing" : v === "dashboard" ? "dashboard" : null;
   });
 
-  // If view is explicitly requested as "landing", show LandingPage.
-  // If not authenticated, always show LandingPage.
-  // Otherwise, show Dashboard.
-  const showLanding = viewOverride === "landing" || (!token && viewOverride !== "dashboard");
+  // Sync token state on focus / storage events (e.g. after logout)
+  useEffect(() => {
+    const checkAuth = () => {
+      setToken(getStoredToken());
+      const v = new URLSearchParams(window.location.search).get("view");
+      if (v) setViewOverride(v === "landing" ? "landing" : "dashboard");
+    };
+
+    window.addEventListener("storage", checkAuth);
+    window.addEventListener("popstate", checkAuth);
+    return () => {
+      window.removeEventListener("storage", checkAuth);
+      window.removeEventListener("popstate", checkAuth);
+    };
+  }, []);
+
+  // If view is explicitly requested as "landing", or user is not logged in (no token),
+  // always show the Landing Page!
+  const showLanding = viewOverride === "landing" || !token;
 
   if (showLanding) {
-    return <LandingPage onGoToDashboard={() => setViewOverride("dashboard")} />;
+    return (
+      <LandingPage
+        onGoToDashboard={() => {
+          if (!token) {
+            window.location.href = "/auth";
+          } else {
+            setViewOverride("dashboard");
+          }
+        }}
+      />
+    );
   }
 
   return <Dashboard onSwitchToLanding={() => setViewOverride("landing")} />;

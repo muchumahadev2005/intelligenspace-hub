@@ -366,7 +366,64 @@ export const devApi = {
       });
     },
   },
+
+  adminUsers: {
+    list: async (): Promise<AdminUser[]> => {
+      const res = await apiRequest<{ users: AdminUser[] }>("/admin/users");
+      return res.users || [];
+    },
+    updateRole: async (userId: string, role: string): Promise<{ success: boolean; user: Partial<AdminUser> }> => {
+      return apiRequest<{ success: boolean; user: Partial<AdminUser> }>(`/admin/users/${encodeURIComponent(userId)}/role`, {
+        method: "PATCH",
+        body: JSON.stringify({ role }),
+      });
+    },
+    delete: async (userId: string): Promise<{ success: boolean; message: string }> => {
+      return apiRequest<{ success: boolean; message: string }>(`/admin/users/${encodeURIComponent(userId)}`, {
+        method: "DELETE",
+      });
+    },
+  },
+
+  adminWorkspaces: {
+    list: async (): Promise<AdminWorkspace[]> => {
+      const res = await apiRequest<{ workspaces: AdminWorkspace[] }>("/admin/workspaces");
+      return res.workspaces || [];
+    },
+    addCredits: async (id: string, amount: number = 5000): Promise<{ success: boolean; workspace: any }> => {
+      return apiRequest<{ success: boolean; workspace: any }>(`/admin/workspaces/${encodeURIComponent(id)}/credits`, {
+        method: "POST",
+        body: JSON.stringify({ amount }),
+      });
+    },
+  },
 };
+
+export interface AdminWorkspace {
+  id: string;
+  name: string;
+  plan: string;
+  credits: number;
+  region: string;
+  members: number;
+  ownerName: string;
+  ownerEmail: string;
+  status: string;
+  createdAt: string;
+}
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl?: string | null;
+  role: "admin" | "owner" | "developer" | "member";
+  workspaceName?: string;
+  workspaceId?: string;
+  isSuperAdmin: boolean;
+  createdAt: string;
+  updatedAt?: string;
+}
 
 export interface SystemAIModel {
   id: string;
@@ -390,5 +447,6 @@ export interface ModelPingResult {
   prompt?: string;
   tokensUsed?: number;
 }
+
 
 

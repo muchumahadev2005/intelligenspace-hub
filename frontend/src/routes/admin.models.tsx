@@ -65,7 +65,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { devApi, type SystemAIModel, type ModelPingResult } from "@/services/developer-api";
+import {
+  devApi,
+  type SystemAIModel,
+  type ModelPingResult,
+  type AdminUser,
+  type AdminWorkspace,
+} from "@/services/developer-api";
 import { useWorkspaces } from "@/hooks/use-platform";
 import { cn } from "@/lib/utils";
 
@@ -1502,35 +1508,45 @@ export function AdminModelsPage() {
 
 // ── Admin Workspaces & Tenants Section ─────────────────────────────────────
 function AdminWorkspacesSection() {
-  const { data: workspaces, isLoading } = useWorkspaces();
-  const [workspaceList, setWorkspaceList] = useState([
-    { id: "ws_default_01", name: "Acme Labs", plan: "Enterprise", credits: 10000, members: 4, status: "Active", createdAt: "2026-08-15" },
-    { id: "ws_demo_02", name: "AI Innovations Hub", plan: "Pro", credits: 5000, members: 2, status: "Active", createdAt: "2026-09-01" },
-    { id: "ws_test_03", name: "Developer Sandbox", plan: "Starter", credits: 2500, members: 1, status: "Active", createdAt: "2026-09-05" },
-  ]);
+  const queryClient = useQueryClient();
+  const { data: workspaces = [], isLoading, refetch } = useQuery({
+    queryKey: ["admin", "workspaces"],
+    queryFn: () => devApi.adminWorkspaces.list(),
+  });
 
-  const addCredits = (id: string, name: string) => {
-    setWorkspaceList((prev) =>
-      prev.map((ws) => (ws.id === id ? { ...ws, credits: ws.credits + 5000 } : ws))
-    );
-    toast.success(`Allocated +5,000 credits to ${name}`, {
-      description: "Organization balance updated successfully.",
-    });
-  };
+  const creditMutation = useMutation({
+    mutationFn: ({ id, amount }: { id: string; amount: number }) =>
+      devApi.adminWorkspaces.addCredits(id, amount),
+    onSuccess: (res, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "workspaces"] });
+      toast.success("Compute Credits Allocated", {
+        description: `Successfully added ${vars.amount.toLocaleString()} credits to workspace.`,
+      });
+    },
+    onError: (err: any) => {
+      toast.error("Failed to allocate credits", { description: err.message });
+    },
+  });
+
+  const totalCredits = useMemo(
+    () => workspaces.reduce((acc, w) => acc + (Number(w.credits) || 0), 0),
+    [workspaces]
+  );
 
   return (
     <div className="space-y-6">
       <PageHeader
         eyebrow="Tenant Management"
         title="Workspaces & Organizations"
-        description="Monitor tenant workspaces, manage subscription tiers, and allocate compute credits across organizations."
+        description="Live database organizations, multi-tenant subscription tiers, and resource allocation."
         actions={
           <Button
             size="sm"
-            onClick={() => toast.success("New Workspace Provisioned", { description: "Organization workspace generated with starter plan." })}
+            variant="outline"
+            onClick={() => refetch()}
             className="h-9 gap-1.5 text-xs shadow-sm"
           >
-            <Plus className="size-4" /> Provision Workspace
+            <RotateCcw className="size-3.5" /> Refresh Tenants
           </Button>
         }
       />
@@ -1539,7 +1555,9 @@ function AdminWorkspacesSection() {
         <div className="panel p-5 flex items-center justify-between">
           <div>
             <p className="text-xs font-medium text-muted-foreground uppercase">Active Tenants</p>
-            <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">{workspaceList.length}</p>
+            <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
+              {isLoading ? "..." : workspaces.length}
+            </p>
             <p className="text-[11px] text-emerald-400 mt-0.5 flex items-center gap-1">
               <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" /> 100% Operational
             </p>
@@ -1553,7 +1571,7 @@ function AdminWorkspacesSection() {
           <div>
             <p className="text-xs font-medium text-muted-foreground uppercase">Total Compute Credits</p>
             <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
-              {workspaceList.reduce((acc, w) => acc + w.credits, 0).toLocaleString()}
+              {isLoading ? "..." : totalCredits.toLocaleString()}
             </p>
             <p className="text-[11px] text-muted-foreground mt-0.5">Allocated credits</p>
           </div>
@@ -1566,7 +1584,7 @@ function AdminWorkspacesSection() {
           <div>
             <p className="text-xs font-medium text-muted-foreground uppercase">RBAC Isolation</p>
             <p className="mt-1 text-2xl font-bold tracking-tight text-emerald-400">Strict</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">Tenant data isolated</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">PostgreSQL Row-level isolation</p>
           </div>
           <div className="size-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center">
             <ShieldCheck className="size-5" />
@@ -1577,48 +1595,68 @@ function AdminWorkspacesSection() {
       <div className="panel overflow-hidden border border-border/80">
         <div className="p-4 border-b border-border/70 flex items-center justify-between">
           <h3 className="text-sm font-semibold text-foreground">Registered Organizations</h3>
-          <Badge variant="outline" className="text-xs text-muted-foreground">{workspaceList.length} Tenants</Badge>
+          <Badge variant="outline" className="text-xs text-muted-foreground">
+            {isLoading ? "Loading..." : `${workspaces.length} Tenants`}
+          </Badge>
         </div>
-        <div className="divide-y divide-border/60">
-          {workspaceList.map((ws) => (
-            <div key={ws.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-muted/30 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
-                  {ws.name.slice(0, 2).toUpperCase()}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-foreground">{ws.name}</span>
-                    <Badge variant="outline" className="text-[10px] border-primary/30 text-primary bg-primary/10">
-                      {ws.plan}
-                    </Badge>
-                    <Badge variant="outline" className="text-[10px] text-emerald-400 border-emerald-500/30 bg-emerald-500/10">
-                      {ws.status}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-0.5 font-mono">
-                    ID: {ws.id} · Created {ws.createdAt} · {ws.members} team members
-                  </p>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-3 self-end sm:self-center">
-                <div className="text-right">
-                  <p className="text-xs font-semibold text-foreground">{ws.credits.toLocaleString()} credits</p>
-                  <p className="text-[11px] text-muted-foreground">Available balance</p>
+        {isLoading ? (
+          <div className="p-12 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+            <Loader2 className="size-6 animate-spin text-primary" />
+            <p className="text-xs">Loading database workspaces...</p>
+          </div>
+        ) : workspaces.length === 0 ? (
+          <div className="p-8 text-center text-xs text-muted-foreground">
+            No organization workspaces registered in the database.
+          </div>
+        ) : (
+          <div className="divide-y divide-border/60">
+            {workspaces.map((ws) => (
+              <div
+                key={ws.id}
+                className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-muted/30 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
+                    {ws.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-foreground">{ws.name}</span>
+                      <Badge variant="outline" className="text-[10px] border-primary/30 text-primary bg-primary/10 capitalize">
+                        {ws.plan}
+                      </Badge>
+                      <Badge variant="outline" className="text-[10px] text-emerald-400 border-emerald-500/30 bg-emerald-500/10">
+                        {ws.status}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Owner: <span className="font-mono text-foreground/80">{ws.ownerEmail}</span> · {ws.members} member(s) · Created {new Date(ws.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => addCredits(ws.id, ws.name)}
-                  className="h-8 text-xs gap-1"
-                >
-                  <Plus className="size-3" /> +5k Credits
-                </Button>
+
+                <div className="flex items-center gap-3 self-end sm:self-center">
+                  <div className="text-right">
+                    <p className="text-xs font-semibold text-foreground">
+                      {(Number(ws.credits) || 0).toLocaleString()} credits
+                    </p>
+                    <p className="text-[11px] text-muted-foreground">Available balance</p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={creditMutation.isPending}
+                    onClick={() => creditMutation.mutate({ id: ws.id, amount: 5000 })}
+                    className="h-8 text-xs gap-1"
+                  >
+                    <Plus className="size-3" /> +5k Credits
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1626,100 +1664,220 @@ function AdminWorkspacesSection() {
 
 // ── Admin Users & RBAC Directory Section ──────────────────────────────────
 function AdminUsersSection() {
-  const [users, setUsers] = useState([
-    { id: "usr_01", name: "Admin User", email: "admin@intelligenspace.io", role: "admin", status: "Active", lastActive: "Just now" },
-    { id: "usr_02", name: "Dev Lead", email: "developer@intelligenspace.io", role: "developer", status: "Active", lastActive: "15 mins ago" },
-    { id: "usr_03", name: "Product Member", email: "member@intelligenspace.io", role: "member", status: "Active", lastActive: "2 hours ago" },
-    { id: "usr_04", name: "Platform Owner", email: "owner@intelligenspace.io", role: "owner", status: "Active", lastActive: "1 day ago" },
-  ]);
+  const queryClient = useQueryClient();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [userToDelete, setUserToDelete] = useState<AdminUser | null>(null);
 
-  const handleRoleChange = (userId: string, userName: string, newRole: string) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+  // Query real users from database
+  const { data: users = [], isLoading, refetch } = useQuery({
+    queryKey: ["admin", "users"],
+    queryFn: () => devApi.adminUsers.list(),
+  });
+
+  // Update Role Mutation
+  const updateRoleMutation = useMutation({
+    mutationFn: ({ userId, role }: { userId: string; role: string }) =>
+      devApi.adminUsers.updateRole(userId, role),
+    onSuccess: (res, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+      toast.success("Role Updated Successfully", {
+        description: `User role changed to ${vars.role.toUpperCase()}`,
+      });
+    },
+    onError: (err: any) => {
+      toast.error("Failed to update role", { description: err.message });
+    },
+  });
+
+  // Delete User Mutation
+  const deleteUserMutation = useMutation({
+    mutationFn: (userId: string) => devApi.adminUsers.delete(userId),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "workspaces"] });
+      setUserToDelete(null);
+      toast.success("User Deleted", {
+        description: res.message || "User account removed from database.",
+      });
+    },
+    onError: (err: any) => {
+      toast.error("Failed to delete user", { description: err.message });
+    },
+  });
+
+  const filteredUsers = useMemo(() => {
+    if (!searchQuery.trim()) return users;
+    const q = searchQuery.toLowerCase();
+    return users.filter(
+      (u) =>
+        u.name.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        (u.workspaceName && u.workspaceName.toLowerCase().includes(q))
     );
-    toast.success(`Updated Role for ${userName}`, {
-      description: `User role is now ${newRole.toUpperCase()} (RBAC permission applied)`,
-    });
-  };
+  }, [users, searchQuery]);
 
   return (
     <div className="space-y-6">
       <PageHeader
         eyebrow="Access Control"
         title="Users & RBAC Directory"
-        description="Enforce Role-Based Access Control policies. Assign administrative, developer, or member roles across platform users."
+        description="View all real users registered in PostgreSQL database, manage Role-Based Access Control, or delete user accounts."
         actions={
           <Button
             size="sm"
-            onClick={() => toast.success("Invitation Link Generated", { description: "Link copied to clipboard with configured RBAC role." })}
+            variant="outline"
+            onClick={() => refetch()}
             className="h-9 gap-1.5 text-xs shadow-sm"
           >
-            <Plus className="size-4" /> Invite User
+            <RotateCcw className="size-3.5" /> Refresh Users
           </Button>
         }
       />
 
       <div className="panel overflow-hidden border border-border/80">
-        <div className="p-4 border-b border-border/70 flex items-center justify-between">
+        <div className="p-4 border-b border-border/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Shield className="size-4 text-primary" />
-            <h3 className="text-sm font-semibold text-foreground">RBAC Role Permissions Matrix</h3>
+            <h3 className="text-sm font-semibold text-foreground">Live Database Users</h3>
+            <Badge variant="outline" className="text-xs text-emerald-400 border-emerald-500/30 bg-emerald-500/10 ml-2">
+              {isLoading ? "Loading..." : `${users.length} Total Users`}
+            </Badge>
           </div>
-          <Badge variant="outline" className="text-xs text-amber-400 border-amber-500/30 bg-amber-500/10">
-            RBAC Active
-          </Badge>
-        </div>
-        <div className="divide-y divide-border/60">
-          {users.map((u) => (
-            <div key={u.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-muted/30 transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="size-10 rounded-xl bg-surface-2 text-foreground font-semibold flex items-center justify-center text-xs border border-border">
-                  {u.name.slice(0, 2).toUpperCase()}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-foreground">{u.name}</span>
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        "text-[10px] uppercase font-mono px-1.5 py-0",
-                        u.role === "admin" || u.role === "owner"
-                          ? "text-purple-400 border-purple-500/40 bg-purple-500/10"
-                          : u.role === "developer"
-                            ? "text-cyan-400 border-cyan-500/40 bg-cyan-500/10"
-                            : "text-muted-foreground border-border bg-muted/40"
-                      )}
-                    >
-                      {u.role}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    {u.email} · Last active {u.lastActive}
-                  </p>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-2 self-end sm:self-center">
-                <span className="text-xs text-muted-foreground">Assign Role:</span>
-                <Select
-                  value={u.role}
-                  onValueChange={(newRole) => handleRoleChange(u.id, u.name, newRole)}
-                >
-                  <SelectTrigger className="h-8 w-32 text-xs">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="owner">Owner</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                    <SelectItem value="developer">Developer</SelectItem>
-                    <SelectItem value="member">Member</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          ))}
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search user or email..."
+              className="pl-8 h-8 text-xs bg-surface-2/60"
+            />
+          </div>
         </div>
+
+        {isLoading ? (
+          <div className="p-12 flex flex-col items-center justify-center gap-3 text-muted-foreground">
+            <Loader2 className="size-6 animate-spin text-primary" />
+            <p className="text-xs">Querying registered users from PostgreSQL...</p>
+          </div>
+        ) : filteredUsers.length === 0 ? (
+          <div className="p-10 text-center text-xs text-muted-foreground">
+            {searchQuery ? "No users matching your search." : "No registered users found in the database."}
+          </div>
+        ) : (
+          <div className="divide-y divide-border/60">
+            {filteredUsers.map((u) => (
+              <div
+                key={u.id}
+                className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-muted/30 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-xl bg-surface-2 text-foreground font-semibold flex items-center justify-center text-xs border border-border shrink-0">
+                    {u.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-sm font-semibold text-foreground">{u.name}</span>
+                      {u.isSuperAdmin && (
+                        <Badge variant="outline" className="text-[10px] text-amber-400 border-amber-500/40 bg-amber-500/10 font-mono uppercase px-1.5 py-0">
+                          Super Admin
+                        </Badge>
+                      )}
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "text-[10px] uppercase font-mono px-1.5 py-0",
+                          u.role === "admin" || u.role === "owner"
+                            ? "text-purple-400 border-purple-500/40 bg-purple-500/10"
+                            : u.role === "developer"
+                              ? "text-cyan-400 border-cyan-500/40 bg-cyan-500/10"
+                              : "text-muted-foreground border-border bg-muted/40"
+                        )}
+                      >
+                        {u.role}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      <span className="font-mono text-foreground/80">{u.email}</span> · {u.workspaceName || "Personal Workspace"} · Joined {new Date(u.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 self-end sm:self-center">
+                  <span className="text-xs text-muted-foreground">Assign Role:</span>
+                  <Select
+                    value={u.role}
+                    disabled={u.isSuperAdmin || updateRoleMutation.isPending}
+                    onValueChange={(newRole) => updateRoleMutation.mutate({ userId: u.id, role: newRole })}
+                  >
+                    <SelectTrigger className="h-8 w-32 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="owner">Owner</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="developer">Developer</SelectItem>
+                      <SelectItem value="member">Member</SelectItem>
+                    </SelectContent>
+                  </Select>
+
+                  {!u.isSuperAdmin && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setUserToDelete(u)}
+                      className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      title="Delete User"
+                    >
+                      <Trash2 className="size-4 text-rose-400" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* Delete User Confirmation Dialog */}
+      <Dialog open={Boolean(userToDelete)} onOpenChange={(open) => !open && setUserToDelete(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-base text-destructive flex items-center gap-2">
+              <Trash2 className="size-5" /> Delete User Account
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground pt-2">
+              Are you sure you want to delete <span className="font-bold text-foreground">{userToDelete?.name}</span> ({userToDelete?.email})?
+              <br /><br />
+              This will permanently delete the user and cascade-remove their personal workspace data from PostgreSQL. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0 mt-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setUserToDelete(null)}
+              disabled={deleteUserMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              disabled={deleteUserMutation.isPending}
+              onClick={() => userToDelete && deleteUserMutation.mutate(userToDelete.id)}
+            >
+              {deleteUserMutation.isPending ? (
+                <>
+                  <Loader2 className="size-3.5 animate-spin mr-1.5" /> Deleting...
+                </>
+              ) : (
+                "Permanently Delete"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -1781,11 +1939,11 @@ function AdminQuotasSection() {
 // ── Admin Security Audit Logs Section ──────────────────────────────────────
 function AdminAuditSection() {
   const auditEvents = [
-    { id: "aud_01", time: "Just now", actor: "admin@intelligenspace.io", action: "Updated model state (active)", target: "Free Auto Router", status: "Success" },
-    { id: "aud_02", time: "3 mins ago", actor: "admin@intelligenspace.io", action: "Executed live latency ping (2167ms)", target: "Free Auto Router", status: "Success" },
+    { id: "aud_01", time: "Just now", actor: "mahadevmuchu9977@gmail.com", action: "Updated model state (active)", target: "Free Auto Router", status: "Success" },
+    { id: "aud_02", time: "3 mins ago", actor: "mahadevmuchu9977@gmail.com", action: "Executed live latency ping benchmark", target: "Free Auto Router", status: "Success" },
     { id: "aud_03", time: "12 mins ago", actor: "system_cron", action: "Verified daily limits (30 runs/24h)", target: "Developer AI", status: "Normal" },
-    { id: "aud_04", time: "45 mins ago", actor: "admin@intelligenspace.io", action: "RBAC middleware authentication", target: "Admin Console", status: "Granted" },
-    { id: "aud_05", time: "2 hours ago", actor: "developer@intelligenspace.io", action: "Applied Code Review patch to source file", target: "src/index.ts", status: "Applied" },
+    { id: "aud_04", time: "45 mins ago", actor: "mahadevmuchu9977@gmail.com", action: "RBAC middleware authentication", target: "Admin Console", status: "Granted" },
+    { id: "aud_05", time: "2 hours ago", actor: "mahadevmuchu9977@gmail.com", action: "Applied Code Review patch to source file", target: "src/index.ts", status: "Applied" },
   ];
 
   return (

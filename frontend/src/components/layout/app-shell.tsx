@@ -211,7 +211,7 @@ function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
               className="cursor-pointer text-destructive focus:text-destructive"
               onClick={() => {
                 clearStoredAuth();
-                window.location.href = "/auth";
+                window.location.href = "/?view=landing";
               }}
             >
               Sign out

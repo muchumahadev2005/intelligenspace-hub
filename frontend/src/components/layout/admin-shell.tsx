@@ -256,7 +256,7 @@ export function AdminShell({ children, activeSection = "models", onSectionChange
               title="Sign Out"
               onClick={() => {
                 clearStoredAuth();
-                window.location.href = "/auth";
+                window.location.href = "/?view=landing";
               }}
             >
               <LogOut className="size-3.5" />
@@ -365,7 +365,7 @@ export function AdminShell({ children, activeSection = "models", onSectionChange
               className="h-8 text-xs gap-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
               onClick={() => {
                 clearStoredAuth();
-                window.location.href = "/auth";
+                window.location.href = "/?view=landing";
               }}
             >
               <LogOut className="size-3" /> Sign Out

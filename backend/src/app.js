@@ -28,6 +28,8 @@ import { teamRoutes } from './routes/team.js';
 import { notificationRoutes } from './routes/notifications.js';
 import { developerRoutes } from './routes/developer/index.js';
 import { adminModelsRoutes } from './routes/admin/models.js';
+import { adminUsersRoutes } from './routes/admin/users.js';
+import { adminWorkspacesRoutes } from './routes/admin/workspaces.js';
 
 export function createApp() {
   const app = new Hono();
@@ -165,6 +167,8 @@ export function createApp() {
   app.route('/api/v1/notifications', notificationRoutes);
   app.route('/api/v1/developer', developerRoutes);
   app.route('/api/v1/admin/models', adminModelsRoutes);
+  app.route('/api/v1/admin/users', adminUsersRoutes);
+  app.route('/api/v1/admin/workspaces', adminWorkspacesRoutes);
 
   // ── 404 ───────────────────────────────────────────────────────────
   app.notFound((c) => c.json({ error: 'Route not found' }, 404));
