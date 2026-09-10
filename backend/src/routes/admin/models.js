@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../../middleware/auth.js';
-import { requireRole } from '../../middleware/rbac.js';
+import { requireAdmin, isAdminEmail, ADMIN_EMAIL } from '../../middleware/rbac.js';
 import { query } from '../../db/client.js';
 import { chatCompletion } from '../../services/openrouter.service.js';
 
@@ -9,25 +9,25 @@ export const adminModelsRoutes = new Hono();
 // Protect all admin model endpoints with auth
 adminModelsRoutes.use('*', authMiddleware);
 
-// Enforce RBAC (admin or owner) on mutation and testing endpoints
-adminModelsRoutes.use('/test', requireRole(['admin', 'owner']));
-adminModelsRoutes.post('/', requireRole(['admin', 'owner']));
-adminModelsRoutes.patch('/:id', requireRole(['admin', 'owner']));
-adminModelsRoutes.delete('/:id', requireRole(['admin', 'owner']));
+// Enforce strict Super Administrator access on mutation and testing endpoints
+adminModelsRoutes.use('/test', requireAdmin());
+adminModelsRoutes.post('/', requireAdmin());
+adminModelsRoutes.patch('/:id', requireAdmin());
+adminModelsRoutes.delete('/:id', requireAdmin());
 
 // GET /api/v1/admin/models
 adminModelsRoutes.get('/', async (c) => {
   try {
     const activeOnly = c.req.query('activeOnly') === 'true';
 
-    // If requesting full admin management list (activeOnly is not true), require admin role
+    // If requesting full admin management list (activeOnly is not true), require admin
     if (!activeOnly) {
       const user = c.get('user');
-      const role = (user.role || 'admin').toLowerCase();
-      if (!['admin', 'owner'].includes(role)) {
+      const email = (user?.email || '').trim().toLowerCase();
+      if (!isAdminEmail(email)) {
         return c.json({
-          error: 'Forbidden — Administrator role required to access AI Models console',
-          code: 'RBAC_FORBIDDEN',
+          error: `Forbidden — Access to AI Models console is restricted to platform administrator (${ADMIN_EMAIL})`,
+          code: 'ADMIN_ACCESS_RESTRICTED',
         }, 403);
       }
     }

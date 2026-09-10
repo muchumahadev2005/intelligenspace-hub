@@ -1,23 +1,20 @@
 import { useState, useEffect } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Sparkles, Loader2, Mail, Lock, User, ArrowRight, ShieldCheck } from "lucide-react";
+import { Loader2, ShieldCheck, Sparkles, CheckCircle2, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { setStoredAuth, getStoredToken, loginWithDemoCredentials } from "@/lib/api-client";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in — AI Platform" },
+      { title: "Sign in with Google — IntelligenSpace Hub" },
       {
         name: "description",
-        content: "Sign in or create an account to access AI agent workspaces and developer models.",
+        content: "Sign in with your Google account to access IntelligenSpace Hub enterprise AI workspace.",
       },
-      { property: "og:title", content: "Sign in — AI Platform" },
-      { property: "og:description", content: "Access your AI workspace." },
+      { property: "og:title", content: "Sign in with Google — IntelligenSpace Hub" },
+      { property: "og:description", content: "Enterprise Google SSO Authentication." },
     ],
   }),
   component: AuthPage,
@@ -25,7 +22,7 @@ export const Route = createFileRoute("/auth")({
 
 const API_BASE = (import.meta.env["VITE_API_URL"] as string) || "http://localhost:3001/api/v1";
 
-function GoogleIcon({ className = "size-4" }: { className?: string }) {
+function GoogleIcon({ className = "size-5" }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24">
       <path
@@ -50,11 +47,6 @@ function GoogleIcon({ className = "size-4" }: { className?: string }) {
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"in" | "up">("in");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
 
@@ -67,7 +59,7 @@ function AuthPage() {
     const err = params.get("error");
 
     if (err) {
-      toast.error("Authentication Notice", { description: decodeURIComponent(err) });
+      toast.error("Google Authentication Notice", { description: decodeURIComponent(err) });
       window.history.replaceState({}, "", "/auth");
       return;
     }
@@ -84,7 +76,7 @@ function AuthPage() {
         }
         if (!user) user = { email: "user@intelligenspace.io" };
         setStoredAuth(token, user);
-        toast.success(`Welcome back, ${user.name || "User"}!`, {
+        toast.success(`Welcome, ${user.name || "User"}!`, {
           description: "Signed in successfully with Google.",
         });
         window.location.href = "/";
@@ -111,13 +103,13 @@ function AuthPage() {
     window.location.href = `${API_BASE}/auth/google`;
   };
 
-  // One-click instant login as Demo Administrator
+  // Optional 1-click fallback for development/evaluation
   const handleInstantDemoLogin = async () => {
     setDemoLoading(true);
     try {
       const data = await loginWithDemoCredentials();
-      toast.success("Welcome back, Demo Administrator!", {
-        description: `Signed in as ${data.user.email}`,
+      toast.success("Signed in as Demo Administrator", {
+        description: `Welcome back, ${data.user.email}!`,
       });
       navigate({ to: "/" as "/" });
     } catch (err: any) {
@@ -129,70 +121,23 @@ function AuthPage() {
     }
   };
 
-  // Handle Email/Password Login or Register
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) {
-      toast.error("Please enter your email address");
-      return;
-    }
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      return;
-    }
-    if (mode === "up" && !name.trim()) {
-      toast.error("Please enter your full name");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const endpoint = mode === "in" ? "/auth/login" : "/auth/register";
-      const payload = mode === "in" ? { email, password } : { name, email, password };
-
-      const res = await fetch(`${API_BASE}${endpoint}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Authentication failed");
-      }
-
-      setStoredAuth(data.token, data.user);
-      toast.success(mode === "in" ? "Welcome back!" : "Account created successfully!", {
-        description: `Signed in as ${data.user.email}`,
-      });
-
-      navigate({ to: "/" as "/" });
-    } catch (err: any) {
-      toast.error(mode === "in" ? "Sign In Failed" : "Registration Failed", {
-        description: err.message || "Please check your credentials and try again.",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Quick fill demo credentials
-  const fillDemo = () => {
-    setEmail("demo@intelligenspace.io");
-    setPassword("demo1234");
-    setMode("in");
-    toast.info("Demo credentials loaded", { description: "Click 'Sign In' or use 1-click Demo below." });
-  };
-
+  // If currently processing incoming token redirect, display clean full-screen loader
   const hasIncomingToken = typeof window !== "undefined" && new URLSearchParams(window.location.search).has("token");
   if (hasIncomingToken) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground">
-        <div className="flex flex-col items-center gap-3 p-6 text-center">
-          <Loader2 className="size-8 animate-spin text-primary" />
-          <h2 className="text-lg font-bold">Completing Sign In...</h2>
-          <p className="text-xs text-muted-foreground">Verifying credentials and establishing your secure session.</p>
+        <div className="flex flex-col items-center gap-4 p-8 text-center panel max-w-sm border-primary/30">
+          <div className="relative">
+            <div className="size-12 rounded-2xl bg-primary/10 flex items-center justify-center ring-8 ring-primary/5">
+              <Loader2 className="size-6 animate-spin text-primary" />
+            </div>
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-base font-bold text-foreground">Completing Google Sign In...</h2>
+            <p className="text-xs text-muted-foreground">
+              Establishing your secure session and provisioning workspace.
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -205,21 +150,32 @@ function AuthPage() {
         <div className="absolute -top-32 -left-32 size-96 rounded-full bg-primary/10 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -right-32 size-96 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 flex items-center gap-2.5 text-sm font-bold tracking-tight">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-purple-600 text-white shadow-md shadow-primary/20">
-            <Sparkles className="size-4.5" />
-          </span>
-          <span className="text-base font-extrabold tracking-tight">IntelligenSpace Hub</span>
+        {/* Brand Header */}
+        <div className="relative z-10 flex items-center gap-3">
+          <img
+            src="/brand-logo.jpg"
+            alt="IntelligenSpace Logo"
+            className="size-10 rounded-xl object-cover shadow-lg shadow-primary/25 ring-1 ring-primary/30"
+          />
+          <div>
+            <span className="text-base font-extrabold tracking-tight text-foreground block">
+              IntelligenSpace Hub
+            </span>
+            <span className="text-[11px] text-muted-foreground font-medium block">
+              Enterprise Autonomous AI Platform
+            </span>
+          </div>
         </div>
 
+        {/* Hero Narrative */}
         <div className="relative z-10 max-w-lg space-y-6">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-            <ShieldCheck className="size-3.5" /> Enterprise AI Platform
+            <ShieldCheck className="size-3.5" /> Google OAuth 2.0 Verified
           </div>
 
-          <h2 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground leading-tight">
+          <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground leading-tight">
             Build, Deploy & Govern Autonomous AI Fleets
-          </h2>
+          </h1>
 
           <p className="text-sm text-muted-foreground leading-relaxed">
             Unify Developer AI, agent orchestration, telemetry benchmarking, and multi-model neural routing in one secure workspace.
@@ -243,210 +199,91 @@ function AuthPage() {
         </div>
       </section>
 
-      {/* ── Right Auth Form Panel ─────────────────────────────────── */}
+      {/* ── Right Google SSO Panel ────────────────────────────────── */}
       <section className="flex items-center justify-center p-6 sm:p-12">
-        <div className="w-full max-w-md space-y-6">
-          <div>
-            <h1 className="text-2xl font-extrabold tracking-tight text-foreground">
-              {mode === "in" ? "Welcome back" : "Create your workspace account"}
-            </h1>
-            <p className="mt-1 text-xs text-muted-foreground">
-              {mode === "in"
-                ? "Enter your credentials or continue with Google to access your AI platform."
-                : "Sign up to start building autonomous agents and developer projects."}
+        <div className="w-full max-w-md space-y-8">
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <div className="mx-auto size-16 rounded-2xl p-1 bg-gradient-to-br from-primary/20 via-purple-500/10 to-amber-500/20 shadow-xl shadow-primary/15 ring-1 ring-border/80 flex items-center justify-center mb-4">
+              <img
+                src="/brand-logo.jpg"
+                alt="Logo"
+                className="size-full rounded-xl object-cover"
+              />
+            </div>
+
+            <h2 className="text-2xl font-extrabold tracking-tight text-foreground">
+              Sign in to IntelligenSpace
+            </h2>
+            <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+              Single Sign-On using your authorized Google Account. Seamless, passwordless access to your workspace.
             </p>
           </div>
 
-          {/* ── Continue with Google Button ───────────────────────── */}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleGoogleSignIn}
-            disabled={googleLoading || loading}
-            className="w-full h-10 gap-2.5 text-xs font-semibold border-border/80 bg-surface-1 hover:bg-surface-2 shadow-xs transition-colors"
-          >
-            {googleLoading ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <GoogleIcon className="size-4" />
-            )}
-            Continue with Google
-          </Button>
+          {/* ── Main Google SSO Card ──────────────────────────────── */}
+          <div className="panel p-6 sm:p-8 space-y-6 border-border/80 bg-surface-1/80 backdrop-blur shadow-xl">
+            <div className="space-y-4">
+              <Button
+                type="button"
+                size="lg"
+                onClick={handleGoogleSignIn}
+                disabled={googleLoading || demoLoading}
+                className="w-full h-12 gap-3 text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 border border-blue-400/40 shadow-lg shadow-blue-500/35 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+              >
+                {googleLoading ? (
+                  <>
+                    <Loader2 className="size-5 animate-spin text-white" />
+                    <span>Connecting to Google...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="flex size-7 items-center justify-center rounded-full bg-white shadow-xs shrink-0">
+                      <GoogleIcon className="size-4" />
+                    </span>
+                    <span className="font-semibold text-white tracking-wide">Continue with Google</span>
+                  </>
+                )}
+              </Button>
 
-          {/* ── Or Divider ────────────────────────────────────────── */}
-          <div className="relative flex items-center justify-center">
-            <div className="w-full border-t border-border/80" />
-            <span className="absolute bg-background px-3 text-[11px] font-medium uppercase text-muted-foreground">
-              or with email
-            </span>
+              <div className="text-[11px] text-muted-foreground text-center flex items-center justify-center gap-1.5 pt-1">
+                <Lock className="size-3 text-emerald-400" />
+                <span>Protected by Google OAuth 2.0 · End-to-end Encrypted</span>
+              </div>
+            </div>
+
+            {/* Feature Checkpoints */}
+            <div className="pt-4 border-t border-border/60 space-y-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="size-3.5 text-emerald-400 shrink-0" />
+                <span>One-click sign-in without passwords</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="size-3.5 text-emerald-400 shrink-0" />
+                <span>Automatic isolated workspace provisioning</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="size-3.5 text-emerald-400 shrink-0" />
+                <span>Instant access to 13+ neural AI models</span>
+              </div>
+            </div>
           </div>
 
-          {/* ── Email / Password Tabs Form ────────────────────────── */}
-          <Tabs value={mode} onValueChange={(v) => setMode(v as any)} className="w-full">
-            <TabsList className="w-full h-9">
-              <TabsTrigger value="in" className="flex-1 text-xs">
-                Sign In
-              </TabsTrigger>
-              <TabsTrigger value="up" className="flex-1 text-xs">
-                Create Account
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="in" className="mt-4">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="email-in" className="text-xs font-semibold">
-                    Email Address
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-                    <Input
-                      id="email-in"
-                      type="email"
-                      required
-                      placeholder="you@company.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-9 h-9 text-xs"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="pass-in" className="text-xs font-semibold">
-                      Password
-                    </Label>
-                    <button
-                      type="button"
-                      onClick={() => toast.info("Password Reset", { description: "Contact your administrator or reset via Google OAuth." })}
-                      className="text-[11px] text-primary hover:underline"
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-                    <Input
-                      id="pass-in"
-                      type="password"
-                      required
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-9 h-9 text-xs"
-                    />
-                  </div>
-                </div>
-
-                <Button type="submit" disabled={loading} className="w-full h-9 gap-1.5 text-xs font-semibold">
-                  {loading ? (
-                    <>
-                      <Loader2 className="size-3.5 animate-spin" /> Signing In...
-                    </>
-                  ) : (
-                    <>
-                      Sign In <ArrowRight className="size-3.5" />
-                    </>
-                  )}
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="up" className="mt-4">
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="name-up" className="text-xs font-semibold">
-                    Full Name
-                  </Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-                    <Input
-                      id="name-up"
-                      type="text"
-                      required
-                      placeholder="Alex Developer"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="pl-9 h-9 text-xs"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="email-up" className="text-xs font-semibold">
-                    Email Address
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-                    <Input
-                      id="email-up"
-                      type="email"
-                      required
-                      placeholder="you@company.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-9 h-9 text-xs"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label htmlFor="pass-up" className="text-xs font-semibold">
-                    Password (min 6 characters)
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
-                    <Input
-                      id="pass-up"
-                      type="password"
-                      required
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="pl-9 h-9 text-xs"
-                    />
-                  </div>
-                </div>
-
-                <Button type="submit" disabled={loading} className="w-full h-9 gap-1.5 text-xs font-semibold">
-                  {loading ? (
-                    <>
-                      <Loader2 className="size-3.5 animate-spin" /> Creating Account...
-                    </>
-                  ) : (
-                    <>
-                      Create Workspace Account <ArrowRight className="size-3.5" />
-                    </>
-                  )}
-                </Button>
-              </form>
-            </TabsContent>
-          </Tabs>
-
-          {/* ── Demo Quick-Access Panel ───────────────────────────── */}
-          <div className="pt-3 border-t border-border/60 space-y-2">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>Developer Quick Access:</span>
-              <button
-                type="button"
-                onClick={fillDemo}
-                className="text-primary hover:underline font-medium text-xs"
-              >
-                Fill Demo Form
-              </button>
-            </div>
+          {/* ── Quick Developer Demo Access ───────────────────────── */}
+          <div className="pt-2 text-center space-y-2">
+            <p className="text-[11px] text-muted-foreground">
+              Testing locally without Google?
+            </p>
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={handleInstantDemoLogin}
-              disabled={demoLoading || loading || googleLoading}
-              className="w-full h-8 text-xs font-semibold gap-1.5 border-dashed border-primary/40 bg-primary/5 hover:bg-primary/10 text-primary"
+              disabled={demoLoading || googleLoading}
+              className="h-8 text-xs font-semibold gap-1.5 text-primary hover:bg-primary/10"
             >
               {demoLoading ? (
                 <>
-                  <Loader2 className="size-3 animate-spin" /> Signing in as Demo Admin...
+                  <Loader2 className="size-3 animate-spin" /> Signing In...
                 </>
               ) : (
                 <>

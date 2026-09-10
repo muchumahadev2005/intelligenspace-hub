@@ -1,4 +1,47 @@
 import { query } from '../db/client.js';
+export const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'mahadevmuchu9977@gmail.com').trim().toLowerCase();
+
+/**
+ * Check if the provided email matches the designated platform administrator.
+ * @param {string} email
+ * @returns {boolean}
+ */
+export function isAdminEmail(email) {
+  if (!email) return false;
+  return email.trim().toLowerCase() === ADMIN_EMAIL;
+}
+
+/**
+ * Super Admin Middleware.
+ * Strictly verifies that the authenticated user is the designated platform administrator (mahadevmuchu9977@gmail.com).
+ * No other role (including workspace owner or member) can bypass this.
+ */
+export function requireAdmin() {
+  return async (c, next) => {
+    const user = c.get('user');
+
+    if (!user) {
+      return c.json({
+        error: 'Unauthorized — Authentication required',
+        code: 'UNAUTHORIZED',
+      }, 401);
+    }
+
+    const email = (user.email || '').trim().toLowerCase();
+
+    if (!isAdminEmail(email)) {
+      return c.json({
+        error: `Forbidden — Access to the Admin Console is strictly restricted to ${ADMIN_EMAIL}.`,
+        code: 'ADMIN_ACCESS_RESTRICTED',
+      }, 403);
+    }
+
+    c.set('isAdmin', true);
+    c.set('userRole', 'admin');
+
+    return await next();
+  };
+}
 
 /**
  * Role-Based Access Control (RBAC) Middleware.
@@ -37,9 +80,9 @@ export function requireRole(allowedRoles = ['admin', 'owner']) {
       }
     }
 
-    // Default development fallback: if no workspace member record, check if user is system admin
+    // Default fallback: only the designated admin gets 'admin'; all others default to 'member'
     if (!role) {
-      role = 'admin';
+      role = isAdminEmail(user.email) ? 'admin' : 'member';
     }
 
     const normalizedAllowed = allowedRoles.map((r) => r.toLowerCase());
@@ -59,3 +102,4 @@ export function requireRole(allowedRoles = ['admin', 'owner']) {
     return await next();
   };
 }
+

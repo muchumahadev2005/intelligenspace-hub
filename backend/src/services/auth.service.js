@@ -1,6 +1,7 @@
 import { query } from '../db/client.js';
 import { hashPassword, comparePassword } from '../utils/hash.js';
 import { signToken } from '../utils/jwt.js';
+import { isAdminEmail } from '../middleware/rbac.js';
 
 export async function register({ name, email, password }) {
   // Check if user already exists
@@ -25,14 +26,21 @@ export async function register({ name, email, password }) {
   );
   const workspaceId = wsResult.rows[0].id;
 
-  // Add as owner member
+  // Add as owner member in workspace
   await query(
     `INSERT INTO workspace_members (workspace_id, user_id, role, status) VALUES ($1, $2, 'owner', 'active')`,
     [workspaceId, user.id]
   );
 
-  const token = signToken({ userId: user.id, workspaceId, email: user.email, role: 'owner' });
-  return { user: { id: user.id, name: user.name, email: user.email, role: 'owner' }, workspaceId, token };
+  const isAdmin = isAdminEmail(user.email);
+  const effectiveRole = isAdmin ? 'admin' : 'owner';
+
+  const token = signToken({ userId: user.id, workspaceId, email: user.email, role: effectiveRole });
+  return {
+    user: { id: user.id, name: user.name, email: user.email, role: effectiveRole, isAdmin },
+    workspaceId,
+    token,
+  };
 }
 
 export async function login({ email, password }) {
@@ -56,9 +64,12 @@ export async function login({ email, password }) {
     throw Object.assign(new Error('Invalid email or password'), { status: 401 });
   }
 
-  const token = signToken({ userId: row.id, workspaceId: row.workspace_id, email: row.email });
+  const isAdmin = isAdminEmail(row.email);
+  const effectiveRole = isAdmin ? 'admin' : (row.role || 'member');
+
+  const token = signToken({ userId: row.id, workspaceId: row.workspace_id, email: row.email, role: effectiveRole });
   return {
-    user: { id: row.id, name: row.name, email: row.email, role: row.role },
+    user: { id: row.id, name: row.name, email: row.email, role: effectiveRole, isAdmin },
     workspaceId: row.workspace_id,
     token,
   };
@@ -76,13 +87,16 @@ export async function getMe(userId) {
   );
   if (result.rows.length === 0) throw Object.assign(new Error('User not found'), { status: 404 });
   const row = result.rows[0];
+  const isAdmin = isAdminEmail(row.email);
+
   return {
     id: row.id,
     name: row.name,
     email: row.email,
     avatarUrl: row.avatar_url,
     workspaceId: row.workspace_id,
-    role: row.role || 'member',
+    role: isAdmin ? 'admin' : (row.role || 'member'),
+    isAdmin,
     createdAt: row.created_at,
   };
 }
@@ -147,9 +161,12 @@ export async function loginOrRegisterWithGoogle({ googleId, email, name, avatarU
     );
   }
 
-  const token = signToken({ userId: user.id, workspaceId, email: user.email, role });
+  const isAdmin = isAdminEmail(user.email);
+  const effectiveRole = isAdmin ? 'admin' : role;
+
+  const token = signToken({ userId: user.id, workspaceId, email: user.email, role: effectiveRole });
   return {
-    user: { id: user.id, name: user.name, email: user.email, avatarUrl: user.avatar_url, role },
+    user: { id: user.id, name: user.name, email: user.email, avatarUrl: user.avatar_url, role: effectiveRole, isAdmin },
     workspaceId,
     token,
   };

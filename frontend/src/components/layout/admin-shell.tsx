@@ -61,29 +61,23 @@ interface AdminShellProps {
   onSectionChange?: (section: string) => void;
 }
 
+export const ADMIN_EMAIL = "mahadevmuchu9977@gmail.com";
+
+/**
+ * Check if the provided email matches the designated platform administrator.
+ */
+export function isUserAdmin(email?: string | null): boolean {
+  if (!email) return false;
+  return email.trim().toLowerCase() === ADMIN_EMAIL.toLowerCase();
+}
+
 export function AdminShell({ children, activeSection = "models", onSectionChange }: AdminShellProps) {
-  const { data: session } = useSession();
+  const { data: session, isLoading: isSessionLoading } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
   const routerState = useRouterState();
   const currentPath = routerState.location.pathname;
 
-  // RBAC Role State (allows live simulation of Admin vs Member role)
-  const [activeRole, setActiveRole] = useState<"admin" | "member">(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("admin_rbac_role_override");
-      if (saved === "member" || saved === "admin") return saved;
-    }
-    return (session?.role?.toLowerCase() === "member" ? "member" : "admin");
-  });
-
-  const handleRoleSwitch = (role: "admin" | "member") => {
-    setActiveRole(role);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("admin_rbac_role_override", role);
-    }
-  };
-
-  const isAuthorized = activeRole === "admin";
+  const isAuthorized = Boolean(session?.email && isUserAdmin(session.email));
 
   // Authentication guard: redirect to /auth if no session exists
   useEffect(() => {
@@ -101,9 +95,11 @@ export function AdminShell({ children, activeSection = "models", onSectionChange
         <div className="flex flex-col gap-2.5 p-3.5 border-b border-border/70 shrink-0">
           <div className="flex items-center justify-between">
             <Link to="/admin/models" className="flex items-center gap-2.5">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-rose-600 text-white shadow-md shadow-amber-500/20">
-                <ShieldCheck className="size-4.5" />
-              </span>
+              <img
+                src="/brand-logo.jpg"
+                alt="IntelligenSpace Logo"
+                className="size-8 rounded-lg object-cover shadow-sm ring-1 ring-amber-500/30"
+              />
               <div>
                 <span className="block text-xs font-bold tracking-tight text-foreground uppercase">
                   Admin Console
@@ -237,20 +233,20 @@ export function AdminShell({ children, activeSection = "models", onSectionChange
           </div>
         </div>
 
-        {/* Admin Footer: User profile & RBAC Role Switcher */}
+        {/* Admin Footer: User profile & Super Admin Status */}
         <div className="p-3 border-t border-border/80 bg-surface-2/40 space-y-2 shrink-0">
           <div className="flex items-center gap-2.5 px-2">
             <Avatar className="size-8 border border-border/60">
               <AvatarFallback className="text-xs bg-amber-500/15 text-amber-400 font-semibold">
-                {session?.initials || "AD"}
+                {session?.initials || "MA"}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-semibold text-foreground">
-                {session?.name || "Admin User"}
+                {session?.name || "Muchu Mahadev"}
               </p>
-              <p className="truncate text-[10px] text-muted-foreground">
-                {session?.email || "admin@intelligenspace.io"}
+              <p className="truncate text-[10px] text-muted-foreground font-mono">
+                {session?.email || ADMIN_EMAIL}
               </p>
             </div>
             <Button
@@ -267,42 +263,22 @@ export function AdminShell({ children, activeSection = "models", onSectionChange
             </Button>
           </div>
 
-          {/* Live RBAC Simulator Widget */}
-          <div className="rounded-lg border border-border/60 bg-background/80 p-2 text-xs space-y-1.5">
+          {/* Super Admin Verified Status Card */}
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-2 text-xs space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-semibold uppercase text-muted-foreground tracking-wide flex items-center gap-1">
-                <ShieldCheck className="size-3 text-amber-400" /> RBAC Role
+              <span className="text-[10px] font-semibold uppercase text-amber-400 tracking-wide flex items-center gap-1">
+                <ShieldCheck className="size-3.5 text-amber-400" /> Super Admin
               </span>
               <Badge
                 variant="outline"
-                className={cn(
-                  "text-[10px] px-1 py-0 h-4 font-mono uppercase",
-                  activeRole === "admin"
-                    ? "text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
-                    : "text-rose-400 border-rose-500/30 bg-rose-500/10",
-                )}
+                className="text-[9px] px-1 py-0 h-4 font-mono uppercase text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
               >
-                {activeRole}
+                Exclusive
               </Badge>
             </div>
-            <div className="grid grid-cols-2 gap-1 pt-1">
-              <Button
-                variant={activeRole === "admin" ? "default" : "outline"}
-                size="sm"
-                onClick={() => handleRoleSwitch("admin")}
-                className="h-6 text-[10px] px-1.5"
-              >
-                Admin
-              </Button>
-              <Button
-                variant={activeRole === "member" ? "destructive" : "outline"}
-                size="sm"
-                onClick={() => handleRoleSwitch("member")}
-                className="h-6 text-[10px] px-1.5"
-              >
-                Member (Test)
-              </Button>
-            </div>
+            <p className="text-[10px] text-muted-foreground">
+              Designated administrator: <span className="text-foreground font-medium">{ADMIN_EMAIL}</span>
+            </p>
           </div>
         </div>
       </aside>
@@ -397,24 +373,38 @@ export function AdminShell({ children, activeSection = "models", onSectionChange
           </div>
         </header>
 
-        {/* Main Body with RBAC Gate */}
+        {/* Main Body with Super Admin RBAC Gate */}
         <main className="flex-1 p-4 lg:p-6">
-          {!isAuthorized ? (
+          {isSessionLoading ? (
+            <div className="mx-auto max-w-lg mt-24 text-center space-y-4 panel p-8">
+              <div className="mx-auto size-10 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              <p className="text-xs text-muted-foreground">Verifying administrator credentials…</p>
+            </div>
+          ) : !isAuthorized ? (
             /* ── 403 Forbidden RBAC Denial Screen ──────────────── */
-            <div className="mx-auto max-w-lg mt-16 text-center space-y-5 panel p-8 border-destructive/40 bg-destructive/5">
+            <div className="mx-auto max-w-lg mt-16 text-center space-y-5 panel p-8 border-destructive/40 bg-destructive/5 shadow-2xl">
               <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-destructive/15 text-destructive ring-8 ring-destructive/10">
                 <ShieldAlert className="size-7" />
               </div>
               <div className="space-y-2">
                 <Badge variant="outline" className="text-xs text-destructive border-destructive/40 bg-destructive/10">
-                  403 Forbidden — Access Denied
+                  403 Forbidden — Super Admin Only
                 </Badge>
                 <h2 className="text-lg font-bold tracking-tight text-foreground">
                   Administrator Privileges Required
                 </h2>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  Your current session role is <strong>"Member"</strong>. You do not have permission to access the AI Platform Admin Console or modify system AI models.
+                  The AI Platform Admin Console is strictly reserved for the designated platform administrator (<strong>{ADMIN_EMAIL}</strong>). No other users or roles are authorized to access this section.
                 </p>
+                {session?.email ? (
+                  <p className="text-[11px] text-muted-foreground">
+                    You are currently signed in as <code className="font-mono text-destructive px-1.5 py-0.5 rounded bg-destructive/10">{session.email}</code>.
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-muted-foreground">
+                    You are not signed in as the authorized administrator.
+                  </p>
+                )}
               </div>
 
               <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -425,10 +415,14 @@ export function AdminShell({ children, activeSection = "models", onSectionChange
                 </Button>
                 <Button
                   size="sm"
-                  onClick={() => handleRoleSwitch("admin")}
-                  className="w-full sm:w-auto text-xs gap-1.5 bg-amber-500 hover:bg-amber-600 text-black font-semibold"
+                  variant="default"
+                  onClick={() => {
+                    clearStoredAuth();
+                    window.location.href = "/auth";
+                  }}
+                  className="w-full sm:w-auto text-xs gap-1.5 font-semibold bg-amber-500 hover:bg-amber-600 text-black"
                 >
-                  <ShieldCheck className="size-3.5" /> Switch to Admin Role
+                  <LogOut className="size-3.5" /> Sign In as {ADMIN_EMAIL}
                 </Button>
               </div>
             </div>

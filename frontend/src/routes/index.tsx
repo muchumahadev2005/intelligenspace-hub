@@ -11,7 +11,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Bot, Clock, CreditCard, PhoneCall, Plus } from "lucide-react";
+import { Bot, Clock, CreditCard, Globe, PhoneCall, Plus } from "lucide-react";
 import { AppShell } from "@/components/layout/app-shell";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatCard } from "@/components/shared/stat-card";
@@ -19,25 +19,47 @@ import { CardsSkeleton, ChartSkeleton, ErrorState } from "@/components/shared/st
 import { Button } from "@/components/ui/button";
 import { useActivity, useMetrics, useSeries } from "@/hooks/use-platform";
 import { num, relative } from "@/lib/format";
+import { LandingPage } from "@/components/landing/landing-page";
+import { getStoredToken } from "@/lib/api-client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — AI Platform" },
+      { title: "IntelligenSpace Hub — Autonomous AI Fleets & Multi-Model Routing" },
       {
         name: "description",
         content:
-          "Monitor AI voice and chat agents, call volume, minutes and credits from one operations dashboard.",
+          "Unify intelligent voice agents, zero-latency multi-model routing across 13+ flagship engines, and strict enterprise RBAC governance.",
       },
-      { property: "og:title", content: "Dashboard — AI Platform" },
+      { property: "og:title", content: "IntelligenSpace Hub — Autonomous AI Fleets" },
       {
         property: "og:description",
-        content: "Real-time overview of your AI agents, calls and credits.",
+        content: "Deploy voice agents, route 13+ neural models, and monitor workspace operations.",
       },
     ],
   }),
-  component: Dashboard,
+  component: IndexRoute,
 });
+
+function IndexRoute() {
+  const [token] = useState(() => getStoredToken());
+  const [viewOverride, setViewOverride] = useState<"landing" | "dashboard" | null>(() => {
+    if (typeof window === "undefined") return null;
+    const v = new URLSearchParams(window.location.search).get("view");
+    return v === "landing" ? "landing" : v === "dashboard" ? "dashboard" : null;
+  });
+
+  // If view is explicitly requested as "landing", show LandingPage.
+  // If not authenticated, always show LandingPage.
+  // Otherwise, show Dashboard.
+  const showLanding = viewOverride === "landing" || (!token && viewOverride !== "dashboard");
+
+  if (showLanding) {
+    return <LandingPage onGoToDashboard={() => setViewOverride("dashboard")} />;
+  }
+
+  return <Dashboard onSwitchToLanding={() => setViewOverride("landing")} />;
+}
 
 const ranges = [7, 30, 90] as const;
 
@@ -55,7 +77,11 @@ function ChartTooltip({ active, payload, label }: any) {
   );
 }
 
-function Dashboard() {
+interface DashboardProps {
+  onSwitchToLanding?: () => void;
+}
+
+function Dashboard({ onSwitchToLanding }: DashboardProps = {}) {
   const [range, setRange] = useState<(typeof ranges)[number]>(30);
   const metrics = useMetrics();
   const series = useSeries(range);
@@ -72,11 +98,24 @@ function Dashboard() {
         title="Operations dashboard"
         description="Live view of agent activity, call volume and credit consumption across your workspace."
         actions={
-          <Button asChild>
-            <Link to={"/agents/new" as "/"}>
-              <Plus /> New agent
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            {onSwitchToLanding && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={onSwitchToLanding}
+                className="border-border text-xs gap-1.5 hover:bg-surface-2"
+              >
+                <Globe className="size-3.5 text-primary" />
+                Landing Page
+              </Button>
+            )}
+            <Button asChild>
+              <Link to={"/agents/new" as "/"}>
+                <Plus /> New agent
+              </Link>
+            </Button>
+          </div>
         }
       />
 

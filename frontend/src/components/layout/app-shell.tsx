@@ -7,6 +7,7 @@ import {
   Plus,
   Search,
   Sparkles,
+  Shield,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -25,17 +26,17 @@ import { navGroups, mobileNav } from "./nav";
 import { CommandPalette } from "./command-palette";
 import { useNotifications, useSession, useWorkspaces } from "@/hooks/use-platform";
 import { clearStoredAuth, getStoredToken } from "@/lib/api-client";
+import { isUserAdmin } from "./admin-shell";
 
 function Brand() {
   return (
     <Link to="/" className="flex items-center gap-2.5 px-1">
-      <span
-        className="flex size-8 items-center justify-center rounded-lg text-primary-foreground"
-        style={{ backgroundImage: "var(--gradient-accent)" }}
-      >
-        <Sparkles className="size-4" aria-hidden />
-      </span>
-      <span className="text-sm font-semibold tracking-tight">AI Platform</span>
+      <img
+        src="/brand-logo.jpg"
+        alt="IntelligenSpace Logo"
+        className="size-8 rounded-lg object-cover shadow-sm ring-1 ring-primary/25"
+      />
+      <span className="text-sm font-semibold tracking-tight">IntelligenSpace</span>
     </Link>
   );
 }
@@ -178,6 +179,24 @@ function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
               <div className="text-xs font-normal text-muted-foreground">{user.email}</div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            {isUserAdmin(user.email) && (
+              <>
+                <DropdownMenuItem asChild>
+                  <Link
+                    to={"/admin/models" as "/"}
+                    className="flex items-center justify-between font-semibold text-amber-400 focus:text-amber-300 cursor-pointer"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Shield className="size-4" /> Admin Console
+                    </span>
+                    <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-amber-500/40 bg-amber-500/10 text-amber-400">
+                      Super Admin
+                    </Badge>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            )}
             <DropdownMenuItem asChild>
               <Link to={"/settings" as "/"}>Settings</Link>
             </DropdownMenuItem>
