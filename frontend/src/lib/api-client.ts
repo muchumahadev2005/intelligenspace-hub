@@ -3,7 +3,7 @@
  * Handles automatic JWT management, base URL resolution, and error handling.
  */
 
-const API_BASE = (import.meta.env['VITE_API_URL'] as string) || 'https://intelligenspace-hub.onrender.com/api/v1';
+const API_BASE = (import.meta.env['VITE_API_URL'] as string) || '/api/v1';
 const TOKEN_STORAGE_KEY = 'intelligenspace_token';
 const USER_STORAGE_KEY = 'intelligenspace_user';
 

@@ -41,7 +41,7 @@ import { getStoredToken } from "@/lib/api-client";
 import { useSession } from "@/hooks/use-platform";
 import { isUserAdmin } from "@/components/layout/admin-shell";
 
-const API_BASE = (import.meta.env["VITE_API_URL"] as string) || "https://intelligenspace-hub.onrender.com/api/v1";
+const API_BASE = (import.meta.env["VITE_API_URL"] as string) || "/api/v1";
 
 function GoogleIcon({ className = "size-4" }: { className?: string }) {
   return (

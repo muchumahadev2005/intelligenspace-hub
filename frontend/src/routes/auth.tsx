@@ -20,7 +20,7 @@ export const Route = createFileRoute("/auth")({
   component: AuthPage,
 });
 
-const API_BASE = (import.meta.env["VITE_API_URL"] as string) || "https://intelligenspace-hub.onrender.com/api/v1";
+const API_BASE = (import.meta.env["VITE_API_URL"] as string) || "/api/v1";
 
 function GoogleIcon({ className = "size-5" }: { className?: string }) {
   return (
