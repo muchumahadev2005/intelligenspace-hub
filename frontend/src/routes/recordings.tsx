@@ -105,6 +105,11 @@ function RecordingsPage() {
       }
 
       const item = transcript[index];
+      if (!item) {
+        setPlayingCallId(null);
+        setActiveSpeechIndex(-1);
+        return;
+      }
       setActiveSpeechIndex(index);
 
       const utterance = new SpeechSynthesisUtterance(item.text);
@@ -248,12 +253,12 @@ function RecordingsPage() {
                       "{previewSnippet || "Conversation recorded and saved."}"
                     </p>
                   )}
-                  {isPlaying && activeSpeechIndex >= 0 && call.transcript?.[activeSpeechIndex] && (
+                  {isPlaying && activeSpeechIndex >= 0 && Boolean(call.transcript?.[activeSpeechIndex]) && (
                     <p className="mt-2 text-center text-[11px] text-foreground font-medium truncate">
                       <span className="text-primary uppercase tracking-wider text-[10px] mr-1">
-                        {call.transcript[activeSpeechIndex].speaker}:
+                        {call.transcript?.[activeSpeechIndex]?.speaker}:
                       </span>
-                      {call.transcript[activeSpeechIndex].text}
+                      {call.transcript?.[activeSpeechIndex]?.text}
                     </p>
                   )}
                 </div>
