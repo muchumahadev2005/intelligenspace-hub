@@ -42,26 +42,23 @@ export const Route = createFileRoute("/")({
 });
 
 function IndexRoute() {
-  const [token, setToken] = useState(() => getStoredToken());
+  const [token, setToken] = useState<string | null>(() => getStoredToken());
   const [viewOverride, setViewOverride] = useState<"landing" | "dashboard" | null>(() => {
     if (typeof window === "undefined") return null;
     const v = new URLSearchParams(window.location.search).get("view");
     return v === "landing" ? "landing" : v === "dashboard" ? "dashboard" : null;
   });
 
-  // Sync token state on focus / storage events (e.g. after logout)
+  // Sync token state on storage events (e.g. after logout in another tab or action)
   useEffect(() => {
     const checkAuth = () => {
-      setToken(getStoredToken());
-      const v = new URLSearchParams(window.location.search).get("view");
-      if (v) setViewOverride(v === "landing" ? "landing" : "dashboard");
+      const currentToken = getStoredToken();
+      setToken((prev) => (prev !== currentToken ? currentToken : prev));
     };
 
     window.addEventListener("storage", checkAuth);
-    window.addEventListener("popstate", checkAuth);
     return () => {
       window.removeEventListener("storage", checkAuth);
-      window.removeEventListener("popstate", checkAuth);
     };
   }, []);
 

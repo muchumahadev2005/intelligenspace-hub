@@ -204,6 +204,14 @@ function AuthPage() {
         <div className="w-full max-w-md space-y-8">
           {/* Header */}
           <div className="text-center space-y-2">
+            <div className="flex justify-center mb-2">
+              <Link
+                to="/"
+                className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 transition-colors px-3 py-1 rounded-full border border-border/60 bg-surface-2/40 hover:bg-surface-2"
+              >
+                ← Back to Home / Landing Page
+              </Link>
+            </div>
             <div className="mx-auto size-16 rounded-2xl p-1 bg-gradient-to-br from-primary/20 via-purple-500/10 to-amber-500/20 shadow-xl shadow-primary/15 ring-1 ring-border/80 flex items-center justify-center mb-4">
               <img
                 src="/brand-logo.jpg"

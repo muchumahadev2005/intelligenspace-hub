@@ -79,11 +79,11 @@ export function AdminShell({ children, activeSection = "models", onSectionChange
 
   const isAuthorized = Boolean(session?.email && isUserAdmin(session.email));
 
-  // Authentication guard: redirect to /auth if no session exists
+  // Authentication guard: redirect to landing page (/) if no session exists
   useEffect(() => {
     const token = getStoredToken();
-    if (!token && typeof window !== "undefined" && !window.location.pathname.startsWith("/auth")) {
-      window.location.href = "/auth";
+    if (!token && typeof window !== "undefined" && window.location.pathname !== "/" && !window.location.pathname.startsWith("/auth")) {
+      window.location.href = "/";
     }
   }, []);
 
@@ -256,7 +256,7 @@ export function AdminShell({ children, activeSection = "models", onSectionChange
               title="Sign Out"
               onClick={() => {
                 clearStoredAuth();
-                window.location.href = "/?view=landing";
+                window.location.href = "/";
               }}
             >
               <LogOut className="size-3.5" />
@@ -365,7 +365,7 @@ export function AdminShell({ children, activeSection = "models", onSectionChange
               className="h-8 text-xs gap-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
               onClick={() => {
                 clearStoredAuth();
-                window.location.href = "/?view=landing";
+                window.location.href = "/";
               }}
             >
               <LogOut className="size-3" /> Sign Out

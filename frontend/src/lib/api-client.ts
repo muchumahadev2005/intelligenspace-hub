@@ -80,10 +80,7 @@ export async function apiRequest<T>(
   const response = await fetch(url, { ...options, headers });
 
   if (response.status === 401) {
-    if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/auth')) {
-      clearStoredAuth();
-      window.location.href = '/auth';
-    }
+    clearStoredAuth();
   }
 
   if (!response.ok) {

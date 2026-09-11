@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/services/api";
+import { getStoredToken } from "@/lib/api-client";
 
 export const useAgents = () => useQuery({ queryKey: ["agents"], queryFn: api.agents.list });
 export const useAgent = (id: string) =>
@@ -34,8 +35,17 @@ export const useActivity = () =>
   useQuery({ queryKey: ["activity"], queryFn: api.dashboard.activity });
 export const useSeries = (range: 7 | 30 | 90) =>
   useQuery({ queryKey: ["series", range], queryFn: () => api.dashboard.series(range) });
-export const useSession = () =>
-  useQuery({ queryKey: ["session"], queryFn: api.session.current });
+
+export const useSession = () => {
+  const token = typeof window !== "undefined" ? getStoredToken() : null;
+  return useQuery({
+    queryKey: ["session", token],
+    queryFn: api.session.current,
+    enabled: Boolean(token),
+    retry: false,
+    staleTime: 5 * 60 * 1000,
+  });
+};
 export const useWebhookDeliveries = (webhookId: string | null) =>
   useQuery({
     queryKey: ["webhook-deliveries", webhookId],

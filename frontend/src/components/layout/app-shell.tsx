@@ -211,7 +211,7 @@ function TopBar({ onOpenPalette }: { onOpenPalette: () => void }) {
               className="cursor-pointer text-destructive focus:text-destructive"
               onClick={() => {
                 clearStoredAuth();
-                window.location.href = "/?view=landing";
+                window.location.href = "/";
               }}
             >
               Sign out
@@ -250,11 +250,11 @@ function BottomNav() {
 export function AppShell({ children }: { children: ReactNode }) {
   const [paletteOpen, setPaletteOpen] = useState(false);
 
-  // Authentication guard: redirect to /auth if no session token exists
+  // Authentication guard: redirect to landing page (/) if no session token exists
   useEffect(() => {
     const token = getStoredToken();
-    if (!token && typeof window !== "undefined" && !window.location.pathname.startsWith("/auth")) {
-      window.location.href = "/auth";
+    if (!token && typeof window !== "undefined" && window.location.pathname !== "/" && !window.location.pathname.startsWith("/auth")) {
+      window.location.href = "/";
     }
   }, []);
 
