@@ -13,7 +13,7 @@ RUN npm ci
 COPY . .
 
 # Environment build variables
-ARG VITE_API_URL=http://localhost:3001/api/v1
+ARG VITE_API_URL=https://intelligenspace-hub.onrender.com/api/v1
 ARG VITE_GOOGLE_CLIENT_ID
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
