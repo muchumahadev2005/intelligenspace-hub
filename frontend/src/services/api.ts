@@ -218,6 +218,16 @@ export const api = {
             type: t.type,
             icon: t.icon,
             popularity: Number(t.popularity || 0),
+            instructions: t.instructions || "",
+            greeting: t.greeting || "",
+            tone: t.tone || "",
+            personality: t.personality || "",
+            tools: Array.isArray(t.tools)
+              ? t.tools
+              : typeof t.tools === "string"
+              ? JSON.parse(t.tools || "[]")
+              : [],
+            model: t.model || "openai/gpt-4o-mini",
           }));
         }
       } catch (err) {

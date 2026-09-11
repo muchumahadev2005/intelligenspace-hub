@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -19,6 +19,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { api } from "@/services/api";
+import { useTemplates } from "@/hooks/use-platform";
 import type { AgentType } from "@/types";
 
 export const Route = createFileRoute("/agents/new")({
@@ -45,6 +46,7 @@ const toolOptions = [
 
 function NewAgentPage() {
   const navigate = useNavigate();
+  const { data: templates } = useTemplates();
   const queryClient = useQueryClient();
   const [step, setStep] = useState(0);
   const [saving, setSaving] = useState(false);
@@ -61,6 +63,27 @@ function NewAgentPage() {
     tools: ["Book appointment"] as string[],
     recording: true,
   });
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const templateId = new URLSearchParams(window.location.search).get("templateId");
+    if (templateId && templates) {
+      const t = templates.find((item) => item.id === templateId);
+      if (t) {
+        setForm((f) => ({
+          ...f,
+          name: t.name,
+          description: t.description,
+          type: t.type || "voice",
+          model: t.model || "openai/gpt-4o-mini",
+          tone: t.tone || "Warm and professional",
+          greeting: t.greeting || f.greeting,
+          instructions: t.instructions || f.instructions,
+          tools: t.tools && t.tools.length > 0 ? t.tools : f.tools,
+        }));
+      }
+    }
+  }, [templates]);
 
   const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [key]: value }));

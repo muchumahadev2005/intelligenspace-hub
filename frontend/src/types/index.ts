@@ -34,11 +34,18 @@ export interface AgentTemplate {
     | "Retail"
     | "Home Services"
     | "Finance"
-    | "General";
+    | "General"
+    | string;
   useCase: string;
   type: AgentType;
   icon: string;
   popularity: number;
+  instructions?: string;
+  greeting?: string;
+  tone?: string;
+  personality?: string;
+  tools?: string[];
+  model?: string;
 }
 
 export interface PhoneNumber {
