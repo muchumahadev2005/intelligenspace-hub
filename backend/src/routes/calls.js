@@ -3,14 +3,13 @@ import { authMiddleware } from '../middleware/auth.js';
 import * as callService from '../services/call.service.js';
 import * as agentService from '../services/agent.service.js';
 import * as eventService from '../services/event.service.js';
-import { createWebCall, createPhoneCall } from '../services/retell.service.js';
 import { query } from '../db/client.js';
 import { generateRef } from '../utils/format.js';
 
 export const callRoutes = new Hono();
 callRoutes.use('*', authMiddleware);
 
-// POST /api/v1/calls/web-call — Start live browser voice call via Retell
+// POST /api/v1/calls/web-call — Start live browser voice session
 callRoutes.post('/web-call', async (c) => {
   const { workspaceId } = c.get('user');
   const { agentId, customerName } = await c.req.json();
@@ -19,41 +18,34 @@ callRoutes.post('/web-call', async (c) => {
   const agent = await agentService.getAgent(agentId, workspaceId);
   if (!agent) return c.json({ error: 'Agent not found' }, 404);
 
-  try {
-    const callData = await createWebCall({
-      agent,
-      customerName: customerName || 'Web User',
-      workspaceId,
-    });
-    return c.json(callData);
-  } catch (err) {
-    console.error('[Web Call Error]', err.message);
-    return c.json({ error: err.message || 'Failed to start web voice call' }, 500);
-  }
+  const reference = generateRef('CALL');
+  const dbResult = await query(
+    `INSERT INTO calls (
+      workspace_id, reference, customer, customer_number,
+      agent_id, agent_name, direction, status, started_at
+    ) VALUES ($1, $2, $3, 'Direct Browser Voice', $4, $5, 'inbound', 'ongoing', NOW())
+    RETURNING *`,
+    [workspaceId, reference, customerName || 'Web User', agent.id, agent.name]
+  );
+
+  return c.json({
+    callId: dbResult.rows[0].id,
+    reference,
+    agent: {
+      id: agent.id,
+      name: agent.name,
+      voice: agent.voice,
+      language: agent.language,
+      greeting: agent.greeting,
+      instructions: agent.instructions,
+    },
+    callRecord: dbResult.rows[0],
+  });
 });
 
-// POST /api/v1/calls/phone-call — Start outbound phone call to mobile number via Retell
+// POST /api/v1/calls/phone-call — Outbound call stub
 callRoutes.post('/phone-call', async (c) => {
-  const { workspaceId } = c.get('user');
-  const { agentId, phoneNumber, customerName } = await c.req.json();
-  if (!agentId) return c.json({ error: 'agentId is required' }, 400);
-  if (!phoneNumber) return c.json({ error: 'phoneNumber is required' }, 400);
-
-  const agent = await agentService.getAgent(agentId, workspaceId);
-  if (!agent) return c.json({ error: 'Agent not found' }, 404);
-
-  try {
-    const callData = await createPhoneCall({
-      agent,
-      toNumber: phoneNumber,
-      customerName: customerName || 'Mobile Caller',
-      workspaceId,
-    });
-    return c.json(callData);
-  } catch (err) {
-    console.error('[Phone Call Error]', err.message);
-    return c.json({ error: err.message || 'Failed to place phone call' }, 400);
-  }
+  return c.json({ error: 'Outbound phone calls require custom telephony setup. Use browser voice chat.' }, 400);
 });
 
 // POST /api/v1/calls/log — Save browser voice call to PostgreSQL

@@ -10,8 +10,6 @@ export const env = {
   OPENROUTER_BASE_URL: process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1',
   OPENROUTER_DEFAULT_MODEL: process.env.OPENROUTER_DEFAULT_MODEL || 'openrouter/free',
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:8080',
-  RETELL_API_KEY: process.env.RETELL_API_KEY || process.env['retell-secret-key'] || 'key_301d32e79cc14be38f99a15dcffe',
-  RETELL_AGENT_ID: process.env.RETELL_AGENT_ID || 'agent_8248b4b834a8410562224de3c9',
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || process.env.client_id,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET || process.env.secret_id,
   GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3001/api/v1/auth/google/callback',

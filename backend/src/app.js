@@ -98,16 +98,6 @@ export function createApp() {
     }
   };
 
-  const serveBundle = (c) => {
-    try {
-      const bundle = fs.readFileSync(path.join(mockWebDir, 'retell-bundle.js'), 'utf-8');
-      c.header('Content-Type', 'application/javascript; charset=UTF-8');
-      return c.body(bundle);
-    } catch (e) {
-      return c.text('Bundle not found', 404);
-    }
-  };
-
   const serveAsset = (c) => {
     const filename = c.req.param('file') || 'laddu.jpg';
     try {
@@ -136,27 +126,9 @@ export function createApp() {
   app.get('/demo/app.js', serveJs);
   app.get('/app.js', serveJs);
 
-  // Both /demo/retell-bundle.js and /retell-bundle.js
-  app.get('/demo/retell-bundle.js', serveBundle);
-  app.get('/retell-bundle.js', serveBundle);
-
   // Both /demo/assets/... and /assets/...
   app.get('/demo/assets/:file', serveAsset);
   app.get('/assets/:file', serveAsset);
-
-  // ── Public Webhook: Retell AI Call Updates & Recordings ────────────
-  app.post('/api/v1/webhooks/retell', async (c) => {
-    try {
-      const payload = await c.req.json();
-      const { event, data } = payload;
-      const { handleRetellWebhook } = await import('./services/retell.service.js');
-      await handleRetellWebhook(event, data || payload);
-      return c.json({ received: true });
-    } catch (err) {
-      console.error('[Retell Webhook Error]', err.message);
-      return c.json({ error: err.message }, 500);
-    }
-  });
 
   // ── API v1 ────────────────────────────────────────────────────────
   app.route('/api/v1/auth', authRoutes);
