@@ -39,7 +39,16 @@ export function createApp() {
   app.use('*', secureHeaders());
   app.use('*', cors({
     origin: (origin) => {
-      if (!origin || origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+      if (
+        !origin ||
+        origin.startsWith('http://localhost:') ||
+        origin.startsWith('http://127.0.0.1:') ||
+        origin.endsWith('.vercel.app') ||
+        origin.endsWith('.onrender.com') ||
+        origin.endsWith('.pages.dev') ||
+        env.FRONTEND_URL === '*' ||
+        origin === env.FRONTEND_URL
+      ) {
         return origin || '*';
       }
       return env.FRONTEND_URL;
