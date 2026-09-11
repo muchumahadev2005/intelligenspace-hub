@@ -58,7 +58,15 @@ export function createApp() {
     allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   }));
 
-  // ── Health check ──────────────────────────────────────────────────
+  // ── Root & Health check ───────────────────────────────────────────
+  app.get('/', (c) => c.json({
+    status: 'ok',
+    service: 'IntelligenSpace Hub API',
+    version: '1.0.0',
+    health: '/health',
+    timestamp: new Date().toISOString(),
+  }));
+
   app.get('/health', (c) => c.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
