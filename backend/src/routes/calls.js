@@ -67,7 +67,7 @@ callRoutes.post('/log', async (c) => {
       ) VALUES (
         $1, $2, $3, 'Direct Browser Voice',
         $4, $5, 'inbound', 'completed', $6,
-        NOW(), 0.00, false, $7,
+        NOW(), 0.00, true, $7,
         $8, $9, $10
       ) RETURNING *`,
       [

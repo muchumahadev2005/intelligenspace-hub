@@ -30,7 +30,10 @@ export async function getCall(id, workspaceId) {
 
 export async function listRecordings(workspaceId) {
   const result = await query(
-    `SELECT * FROM calls WHERE workspace_id=$1 AND has_recording=true ORDER BY started_at DESC`,
+    `SELECT * FROM calls 
+     WHERE workspace_id=$1 
+       AND (has_recording=true OR (transcript IS NOT NULL AND jsonb_array_length(transcript) > 0)) 
+     ORDER BY started_at DESC`,
     [workspaceId]
   );
   return result.rows;

@@ -75,6 +75,7 @@ export interface Call {
   startedAt: string;
   cost: number;
   hasRecording: boolean;
+  recordingUrl?: string;
   intent: string;
   sentiment: "positive" | "neutral" | "negative";
   outcome: string;

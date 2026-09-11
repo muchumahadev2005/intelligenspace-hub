@@ -64,6 +64,7 @@ function mapCall(c: any): Call {
     startedAt: c.started_at || c.created_at || new Date().toISOString(),
     cost: Number(c.cost || 0),
     hasRecording: Boolean(c.has_recording),
+    recordingUrl: c.recording_url || c.recordingUrl || undefined,
     intent: c.intent || "",
     sentiment: c.sentiment || "neutral",
     outcome: c.outcome || "",
