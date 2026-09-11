@@ -97,7 +97,12 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
                   className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground data-[status=active]:bg-primary/12 data-[status=active]:text-primary data-[status=active]:font-medium"
                 >
                   <item.icon className="size-4" aria-hidden />
-                  {item.label}
+                  <span className="flex-1 truncate">{item.label}</span>
+                  {item.badge && (
+                    <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                      {item.badge}
+                    </span>
+                  )}
                 </Link>
               </li>
             ))}

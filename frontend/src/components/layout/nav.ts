@@ -25,6 +25,7 @@ export interface NavItem {
   to: string;
   icon: LucideIcon;
   exact?: boolean;
+  badge?: string;
 }
 
 export interface NavGroup {
@@ -42,7 +43,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { label: "Agents", to: "/agents", icon: Bot },
       { label: "Templates", to: "/templates", icon: LayoutTemplate },
-      { label: "Phone numbers", to: "/phone-numbers", icon: Phone },
+      { label: "Phone numbers", to: "/phone-numbers", icon: Phone, badge: "Soon" },
     ],
   },
   {
