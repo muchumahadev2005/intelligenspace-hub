@@ -137,6 +137,7 @@ export function LandingPage({ onGoToDashboard }: LandingPageProps = {}) {
   const [activePillarIndex, setActivePillarIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [activeSection, setActiveSection] = useState("hero");
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   // Track scroll position for top progress bar and active section spy
   useEffect(() => {
@@ -168,7 +169,18 @@ export function LandingPage({ onGoToDashboard }: LandingPageProps = {}) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    try {
+      const backendOrigin = API_BASE.replace(/\/api\/v1\/?$/, '');
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 60000);
+      await fetch(`${backendOrigin}/health`, {
+        signal: controller.signal,
+        mode: 'cors',
+      }).catch(() => {});
+      clearTimeout(timeout);
+    } catch {}
     window.location.href = `${API_BASE}/auth/google`;
   };
 

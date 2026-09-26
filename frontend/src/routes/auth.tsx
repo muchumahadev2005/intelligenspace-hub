@@ -96,10 +96,25 @@ function AuthPage() {
     }
   }, [navigate]);
 
-  // Handle Google OAuth redirect
-  const handleGoogleSignIn = () => {
+  // Handle Google OAuth redirect — pre-warm backend to avoid Render cold-start screen
+  const handleGoogleSignIn = async () => {
     setGoogleLoading(true);
-    // Redirect to backend Google OAuth initiation endpoint
+    try {
+      // Ping the backend health endpoint to wake it up before redirecting.
+      // This keeps the user on our nicely-styled loading page instead of
+      // showing Render's raw cold-start animation.
+      const backendOrigin = API_BASE.replace(/\/api\/v1\/?$/, '');
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 60000); // 60s max wait
+      await fetch(`${backendOrigin}/health`, {
+        signal: controller.signal,
+        mode: 'cors',
+      }).catch(() => {/* ignore errors — still try the redirect */});
+      clearTimeout(timeout);
+    } catch {
+      // Backend might still be waking — redirect anyway and hope it's ready
+    }
+    // Now redirect to the Google OAuth initiation endpoint
     window.location.href = `${API_BASE}/auth/google`;
   };
 
@@ -241,7 +256,7 @@ function AuthPage() {
                 {googleLoading ? (
                   <>
                     <Loader2 className="size-5 animate-spin text-white" />
-                    <span>Connecting to Google...</span>
+                    <span>Waking up server & connecting...</span>
                   </>
                 ) : (
                   <>
